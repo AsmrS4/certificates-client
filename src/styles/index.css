@@ -1,1 +1,5 @@
 @import 'tailwindcss';
+
+.mantine-AppShell-main {
+    padding-top: 60px !important;
+}

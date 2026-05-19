@@ -4,7 +4,6 @@ import React from 'react';
 const stats = [
     { value: 'Период обучения', label: 'Тип справки' },
     { value: 'Бумажная', label: 'Формат' },
-    { value: '12 мая 2026', label: 'Дата' },
 ];
 
 const items = stats.map((stat) => (
@@ -12,14 +11,22 @@ const items = stats.map((stat) => (
         <Text size='xs' c='dimmed'>
             {stat.label}
         </Text>
-        <Text>{stat.value}</Text>
+        <Text size='md'>{stat.value}</Text>
     </div>
 ));
 
-export const OrderCard = () => {
+interface OrderCardProps {
+    id: number;
+    onClick: (id: number) => void;
+}
+
+export const OrderCard = (props: OrderCardProps) => {
     return (
         <Card shadow='xs' padding='sm' withBorder orientation='horizontal'>
-            <div className='flex flex-col w-full px-4 gap-2 hover:cursor-pointer'>
+            <div
+                className='flex flex-col w-full px-4 gap-2 hover:cursor-pointer'
+                onClick={() => props.onClick(props.id)}
+            >
                 <div className='w-full flex flex-row items-center justify-between'>
                     <Text fz='xl'>Заказ номер #12</Text>
                     <Badge color='blue' variant='dot' size='lg' radius='lg'>

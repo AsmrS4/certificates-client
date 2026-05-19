@@ -55,8 +55,7 @@ export const Layout = () => {
     return (
         <AppShell
             header={{ height: 60 }}
-            navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
-            padding={0}
+            navbar={{ width: 324, breakpoint: 'sm', collapsed: { mobile: !opened } }}
             layout='default'
             className='w-full'
         >

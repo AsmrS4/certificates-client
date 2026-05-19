@@ -1,8 +1,13 @@
 import { OrderCard } from '@/components/OrderCard';
-import { Button, Paper, Select, SimpleGrid } from '@mantine/core';
-import { FunnelIcon, FunnelSimpleIcon } from '@phosphor-icons/react';
+import { Button, Pagination, Select, SimpleGrid } from '@mantine/core';
+import { FunnelSimpleIcon } from '@phosphor-icons/react';
+import { useNavigate } from 'react-router-dom';
 
 export const CertificatesPage = () => {
+    const navigate = useNavigate();
+    const handleSelectOrder = (id: number): void => {
+        navigate(`/certificates/${id}`);
+    };
     return (
         <div className='flex flex-col w-full p-8'>
             <div className='flex flex-row items-end gap-8 px-4 mb-4'>
@@ -48,11 +53,12 @@ export const CertificatesPage = () => {
                     Применить
                 </Button>
             </div>
-            <SimpleGrid className='w-full my-8 px-4' cols={2} spacing='md' verticalSpacing='lg'>
-                {[...Array(3)].map((_, index) => {
-                    return <OrderCard />;
+            <SimpleGrid className='w-full my-8 px-4' cols={3} spacing='md' verticalSpacing='lg'>
+                {[...Array(8)].map((_, index) => {
+                    return <OrderCard onClick={handleSelectOrder} id={index} />;
                 })}
             </SimpleGrid>
+            <Pagination className='px-4' total={4} size='lg' radius='sm' />;
         </div>
     );
 };

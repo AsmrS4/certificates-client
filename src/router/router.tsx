@@ -6,6 +6,7 @@ import { AuthLoginHandler } from '@/pages/AuthHandler';
 import PrivateRouter from './PrivateRouter';
 import { Layout } from '@/components/Layout';
 import { RecoveryPage } from '@/pages/Recovery';
+import { CertificateDetails } from '@/pages/CertificateDetails';
 
 export const router = createBrowserRouter([
     {
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
                     {
                         element: <RecoveryPage />,
                         path: routes.certificates.recovery,
+                    },
+                    {
+                        element: <CertificateDetails />,
+                        path: routes.certificates.details,
                     },
                 ],
             },

@@ -8,6 +8,7 @@ export const routes = {
         home: '/certificates',
         recovery: '/recovery',
         uploadFile: '/certificate/upload-file',
+        details: '/certificates/:id',
     },
     errors: {
         forbidden: '/forbidden',
