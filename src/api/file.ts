@@ -1,8 +1,6 @@
 import type { UploadedFile, UploadFileOptions } from '@/models/file';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_DEV_URL;
-
 export const uploadFile = async ({
     pluginId,
     file,
@@ -10,7 +8,7 @@ export const uploadFile = async ({
     onProgress,
 }: UploadFileOptions): Promise<UploadedFile> => {
     const initRes = await axios.post(
-        `${API_URL}/api/files/init`,
+        `/api/files/init`,
         {
             plugin_id: pluginId,
             name: file.name,
@@ -39,7 +37,7 @@ export const uploadFile = async ({
     });
 
     const completeRes = await axios.post<UploadedFile>(
-        `${API_URL}/api/files/${init.file_id}/complete`,
+        `/api/files/${init.file_id}/complete`,
         {},
         {
             withCredentials: true,

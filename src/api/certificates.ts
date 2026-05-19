@@ -2,12 +2,10 @@ import type { CertificateOrder, Certificates, Params } from '@/models/certificat
 import type { AxiosResponse } from 'axios';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_DEV_URL;
-
 export const fetchOrderedCertificates = async (params: Params): Promise<Certificates> => {
     try {
         const res: AxiosResponse<Certificates> = await axios.get(
-            `${API_URL}/triggers/http/certificates/api/certificates/all`,
+            `/api/triggers/http/certificates/api/certificates/all`,
             {
                 params: { ...params },
             },
@@ -23,7 +21,7 @@ export const fetchOrderedCertificateDetails = async (
 ): Promise<CertificateOrder> => {
     try {
         const res: AxiosResponse<CertificateOrder> = await axios.get(
-            `${API_URL}/triggers/http/certificates/api/certificates?id=${orderId}`,
+            `/api/triggers/http/certificates/api/certificates?id=${orderId}`,
         );
         return res.data;
     } catch (error) {
@@ -34,7 +32,7 @@ export const fetchOrderedCertificateDetails = async (
 export const rejectOrderedCertificate = async (orderId: number): Promise<boolean> => {
     try {
         const res: AxiosResponse<boolean> = await axios.delete(
-            `${API_URL}/triggers/http/certificates/api/certificates/reject?id=${orderId}`,
+            `/api/triggers/http/certificates/api/certificates/reject?id=${orderId}`,
             {},
         );
         return res.data;
@@ -46,7 +44,7 @@ export const rejectOrderedCertificate = async (orderId: number): Promise<boolean
 export const processOrderedCertificate = async (orderId: number): Promise<boolean> => {
     try {
         const res: AxiosResponse<boolean> = await axios.post(
-            `${API_URL}/triggers/http/certificates/api/certificates/process?id=${orderId}`,
+            `/api/triggers/http/certificates/api/certificates/process?id=${orderId}`,
             {},
         );
         return res.data;

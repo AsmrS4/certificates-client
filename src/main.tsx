@@ -1,13 +1,14 @@
 import { createRoot } from 'react-dom/client';
 import '@/styles/index.css';
+import '@mantine/core/styles.css';
 import { App } from '@/App.tsx';
-import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './router/AuthContext';
+import { MantineProvider } from '@mantine/core';
 
 createRoot(document.getElementById('root')!).render(
-    <BrowserRouter>
+    <MantineProvider>
         <AuthProvider>
             <App />
         </AuthProvider>
-    </BrowserRouter>,
+    </MantineProvider>,
 );
