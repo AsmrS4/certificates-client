@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN } from '@/constants';
+import { ACCESS_TOKEN } from '@/constants/key';
 import { Navigate, Outlet } from 'react-router-dom';
 import { routes } from './routes';
 
