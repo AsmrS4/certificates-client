@@ -1,5 +1,5 @@
 import type { AuthContextType } from '@/models/auth';
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState } from 'react';
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 

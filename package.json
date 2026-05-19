@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@mantine/core": "^9.2.1",
+    "@mantine/hooks": "^9.2.1",
     "@tailwindcss/vite": "^4.3.0",
     "axios": "^1.16.1",
     "lucide-react": "^1.16.0",
