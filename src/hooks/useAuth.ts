@@ -1,4 +1,4 @@
-import { fetchSession } from '@/api/auth';
+import { exchangeSession, fetchSession } from '@/api/auth';
 import type { AuthContextType } from '@/models/auth';
 import { AuthContext } from '@/router/AuthContext';
 import { useContext } from 'react';
@@ -18,7 +18,10 @@ export const useAuth = (): UseAuth => {
     const handleValidateSession = async () => {
         try {
             context.setLoading(true);
-            await fetchSession();
+            const res = await fetchSession();
+            console.log(res);
+            const session = await exchangeSession();
+            console.log(session);
             context.setIsAuthenticated(true);
             clearError();
         } catch (error) {

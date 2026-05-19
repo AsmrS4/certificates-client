@@ -1,11 +1,10 @@
-import { ACCESS_TOKEN } from '@/constants/key';
 import { Navigate, Outlet } from 'react-router-dom';
 import { routes } from './routes';
+import { useAuth } from '@/hooks/useAuth';
 
 const PrivateRouter = () => {
-    const isAuthenticated: string | boolean = localStorage.getItem(ACCESS_TOKEN) || true;
-
-    if (!isAuthenticated) return <Navigate to={routes.auth.login} replace />;
+    const { context } = useAuth();
+    //if (!context.isAuthenticated) return <Navigate to={routes.auth.login} replace />;
 
     return <Outlet />;
 };

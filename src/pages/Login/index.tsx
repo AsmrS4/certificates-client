@@ -19,8 +19,7 @@ export const LoginPage = () => {
                     justify='center'
                     fullWidth
                     size='lg'
-                    rightSection={<UserCircleCheckIcon size={24} />}
-                    variant='default'
+                    variant='filled'
                     mt='lg'
                     onClick={handleLogin}
                     disabled={isLoading}
