@@ -1,41 +1,12 @@
-import type { CertificateOrder } from '@/models/certificates';
+import { useFetchDetails } from '@/hooks/useFetchDetails';
 import { Text, Badge, Button, CheckIcon, Divider, FileInput, Group, Paper } from '@mantine/core';
 import { XIcon } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 export const CertificateDetails = () => {
     const { id } = useParams();
-    const [order, setOrder] = useState<CertificateOrder | null>(null);
-    const fetchDetails = async () => {
-        setOrder({
-            id: 123,
-            student_id: 10,
-            application_status: 'Prepare',
-            certificate_type: 'Academic',
-            obtain_method: 'Electronic',
-            rejection_reason: '',
-            created_at: '2026-12-12T00:12:23',
-        });
-    };
-    const handleProcess = async (): Promise<boolean> => {
-        return true;
-    };
-    const handleReject = async (): Promise<boolean> => {
-        return true;
-    };
-    useEffect(() => {
-        let isMounted = true;
-        const init = async (): Promise<void> => {
-            if (id && isMounted) {
-                await fetchDetails();
-            }
-        };
-        init();
-        return () => {
-            isMounted = false;
-        };
-    }, [id]);
+    const { order, handleProcess, handleReject } = useFetchDetails(id);
+
     return (
         <div className='flex flex-col w-full p-8'>
             <Paper shadow='xs' p='xl' withBorder>

@@ -24,5 +24,5 @@ export interface Params {
     offset: number;
     status: string;
     type: string;
-    user_id: number;
+    user_id: number | null;
 }

@@ -1,26 +1,14 @@
-import { Badge, Box, Card, Divider, Group, Text } from '@mantine/core';
-import React from 'react';
+import type { CertificateOrder } from '@/models/certificates';
+import { Badge, Card, Divider, Group, Text } from '@mantine/core';
+import { statusMap } from '@/utils/statusMapper';
+import { typeMap, obtainMap } from '@/utils/enumMapper';
 
-const stats = [
-    { value: 'Период обучения', label: 'Тип справки' },
-    { value: 'Бумажная', label: 'Формат' },
-];
-
-const items = stats.map((stat) => (
-    <div key={stat.label}>
-        <Text size='xs' c='dimmed'>
-            {stat.label}
-        </Text>
-        <Text size='md'>{stat.value}</Text>
-    </div>
-));
-
-interface OrderCardProps {
-    id: number;
+interface OrderCardProps extends CertificateOrder {
     onClick: (id: number) => void;
 }
 
 export const OrderCard = (props: OrderCardProps) => {
+    const status = statusMap[props.application_status];
     return (
         <Card shadow='xs' padding='sm' withBorder orientation='horizontal'>
             <div
@@ -28,14 +16,27 @@ export const OrderCard = (props: OrderCardProps) => {
                 onClick={() => props.onClick(props.id)}
             >
                 <div className='w-full flex flex-row items-center justify-between'>
-                    <Text fz='xl'>Заказ номер #12</Text>
-                    <Badge color='blue' variant='dot' size='lg' radius='lg'>
-                        На рассмотрении
+                    <Text fz='lg'>Заказ номер #{props.id}</Text>
+                    <Badge color={status?.color} variant='dot' size='lg' radius='xl'>
+                        {status?.label}
                     </Badge>
                 </div>
                 <Divider />
                 <Group mt='sm'>
-                    <div className='flex flex-row gap-10 w-full'>{items}</div>
+                    <div className='flex flex-row gap-10 w-full'>
+                        <div>
+                            <Text size='xs' c='dimmed'>
+                                {'Тип справки'}
+                            </Text>
+                            <Text size='md'>{typeMap[props.certificate_type]}</Text>
+                        </div>
+                        <div>
+                            <Text size='xs' c='dimmed'>
+                                {'Формат'}
+                            </Text>
+                            <Text size='md'>{obtainMap[props.obtain_method]}</Text>
+                        </div>
+                    </div>
                 </Group>
             </div>
         </Card>

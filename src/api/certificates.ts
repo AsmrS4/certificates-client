@@ -1,6 +1,6 @@
 import type { CertificateOrder, Certificates, Params } from '@/models/certificates';
 import type { AxiosResponse } from 'axios';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 
 export const fetchOrderedCertificates = async (params: Params): Promise<Certificates> => {
     try {
@@ -10,8 +10,13 @@ export const fetchOrderedCertificates = async (params: Params): Promise<Certific
                 params: { ...params },
             },
         );
+        const fullUrl = axios.getUri(res.config);
+        console.log('Request URL:', fullUrl);
         return res.data;
     } catch (error) {
+        if (isAxiosError(error)) {
+            console.log(error.response);
+        }
         throw error;
     }
 };
