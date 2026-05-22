@@ -1,37 +1,20 @@
 import { FieldSkeleton } from '@/components/Skeletons/FieldSkeleton';
 import { StatusStepper } from '@/components/Stepper/StatusStepper';
 import { useFetchDetails } from '@/hooks/useFetchDetails';
+import { useOrderStatus } from '@/hooks/useOrderStatus';
 import { formatDate } from '@/utils/dateFormatter';
 import { obtainMap, typeMap } from '@/utils/enumMapper';
 import { statusMap } from '@/utils/statusMapper';
 import { Text, Badge, Button, CheckIcon, Divider, FileInput, Group, Paper } from '@mantine/core';
 import { XIcon } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 export const CertificateDetails = () => {
     const { id } = useParams();
     const { order, handleProcess, handleReject, isLoading, errorMessage } = useFetchDetails(id);
     const status = order && statusMap[order.application_status];
-    const [currentStepStatus, setStepStatus] = useState<number>(0);
-    const handleStepStatus = (): void => {
-        console.log('called');
-        if (isLoading) return;
-        if (order && id) {
-            if (
-                order.application_status === 'Rejected' ||
-                order.application_status === 'Cancelled'
-            ) {
-                return setStepStatus(-1);
-            }
-            if (order.application_status === 'Prepare') return setStepStatus(2);
-            if (order.application_status === 'Done') return setStepStatus(3);
-        }
-        return;
-    };
-    useEffect(() => {
-        handleStepStatus();
-    }, [id, order?.application_status, isLoading]);
+    const { currentStepStatus } = useOrderStatus(id, order);
+
     return (
         <div className='flex flex-col w-full p-8 gap-12'>
             {!errorMessage && (

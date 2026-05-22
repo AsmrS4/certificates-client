@@ -21,21 +21,22 @@ export const StatusStepper = ({ active }: StatusStepperProps) => {
             <Stepper
                 radius='md'
                 size='sm'
-                active={0}
+                active={1}
                 iconPosition='right'
-                completedIcon={<CheckIcon size={20} />}
+                completedIcon={<CheckIcon size={12} />}
             >
+                <Stepper.Step label={'Шаг 1'} description={'Отправлена на модерацию'} />
                 <Stepper.Step
-                    label={'Шаг 1'}
-                    description={'Принять заявку'}
+                    label={'Шаг 2'}
+                    description={'Отклонена'}
                     color='red'
                     styles={{
                         stepIcon: { borderColor: 'red', backgroundColor: 'red', color: 'white' },
                     }}
                     icon={<XCircleIcon size={20} />}
                 />
-                <Stepper.Step label={'Шаг 2'} description={'Заявка на рассмотрении'} />
-                <Stepper.Step label={'Шаг 3'} description={'Заявка обработана'} />
+                <Stepper.Step label={'Шаг 3'} description={'Заявка на рассмотрении'} />
+                <Stepper.Step label={'Шаг 4'} description={'Заявка обработана'} />
             </Stepper>
         );
     }
@@ -48,9 +49,10 @@ export const StatusStepper = ({ active }: StatusStepperProps) => {
             iconPosition='right'
             completedIcon={<CheckIcon size={12} />}
         >
-            <Stepper.Step label={'Шаг 1'} description={'Принять заявку'} />
-            <Stepper.Step label={'Шаг 2'} description={'Заявка на рассмотрении'} />
-            <Stepper.Step label={'Шаг 3'} description={'Заявка обработана'} />
+            <Stepper.Step label={'Шаг 1'} description={'Отправлена на модерацию'} />
+            <Stepper.Step label={'Шаг 2'} description={'Принять заявку'} />
+            <Stepper.Step label={'Шаг 3'} description={'Заявка на рассмотрении'} />
+            <Stepper.Step label={'Шаг 4'} description={'Заявка обработана'} />
         </Stepper>
     );
 };
