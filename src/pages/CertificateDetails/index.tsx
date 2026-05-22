@@ -1,18 +1,49 @@
 import { FieldSkeleton } from '@/components/Skeletons/FieldSkeleton';
+import { StatusStepper } from '@/components/Stepper/StatusStepper';
 import { useFetchDetails } from '@/hooks/useFetchDetails';
 import { formatDate } from '@/utils/dateFormatter';
 import { obtainMap, typeMap } from '@/utils/enumMapper';
 import { statusMap } from '@/utils/statusMapper';
 import { Text, Badge, Button, CheckIcon, Divider, FileInput, Group, Paper } from '@mantine/core';
 import { XIcon } from '@phosphor-icons/react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 export const CertificateDetails = () => {
     const { id } = useParams();
     const { order, handleProcess, handleReject, isLoading, errorMessage } = useFetchDetails(id);
     const status = order && statusMap[order.application_status];
+    const [currentStepStatus, setStepStatus] = useState<number>(0);
+    const handleStepStatus = (): void => {
+        console.log('called');
+        if (isLoading) return;
+        if (order && id) {
+            if (
+                order.application_status === 'Rejected' ||
+                order.application_status === 'Cancelled'
+            ) {
+                return setStepStatus(-1);
+            }
+            if (order.application_status === 'Prepare') return setStepStatus(2);
+            if (order.application_status === 'Done') return setStepStatus(3);
+        }
+        return;
+    };
+    useEffect(() => {
+        handleStepStatus();
+    }, [id, order?.application_status, isLoading]);
     return (
-        <div className='flex flex-col w-full p-8'>
+        <div className='flex flex-col w-full p-8 gap-12'>
+            {!errorMessage && (
+                <>
+                    <h1 className='font-semibold text-3xl flex flex-row items-center'>
+                        {`Текущий статус заявки`}
+                    </h1>
+                    <div className='w-full items-center justify-between px-8'>
+                        <StatusStepper active={currentStepStatus} />
+                    </div>
+                </>
+            )}
             {errorMessage ? (
                 <div>Не удалось получить данные</div>
             ) : (
@@ -21,7 +52,7 @@ export const CertificateDetails = () => {
                         <div className='flex flex-row items-center gap-8'>
                             <h1 className='font-semibold text-3xl flex flex-row items-center'>
                                 {`Заказ номер #`}
-                                {isLoading ? <FieldSkeleton w={90} /> : order?.id}
+                                {isLoading ? <FieldSkeleton w={40} /> : order?.id}
                             </h1>
                             {isLoading ? (
                                 <FieldSkeleton w={240} r='lg' />
