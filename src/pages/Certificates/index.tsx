@@ -4,6 +4,7 @@ import { useCertificates } from '@/hooks/useCertificates';
 import { Button, Pagination, Select, SimpleGrid } from '@mantine/core';
 import { FunnelSimpleIcon } from '@phosphor-icons/react';
 import { OrderCardSkeleton } from '@/components/Skeletons/OrderCardSkeleton';
+import { EmptyResult } from '@/components/Result/EmptyResult';
 
 const statusOptions = [
     { value: 'Pending', label: 'Новые' },
@@ -37,6 +38,14 @@ export const CertificatesPage = () => {
         if (isLoading) return;
         handleStatus(statusValue ?? '');
         handleType(typeValue ?? '');
+    };
+
+    const resetFilters = () => {
+        handleStatus('');
+        handleType('');
+        handleOffset(1);
+        setStatusValue(null);
+        setTypeValue(null);
     };
 
     return (
@@ -87,8 +96,9 @@ export const CertificatesPage = () => {
                     ? certificates.map((item) => {
                           return <OrderCard key={item.id} onClick={handleSelectOrder} {...item} />;
                       })
-                    : !isLoading && <div>Ничего не найдено</div>}
+                    : !isLoading && <></>}
             </SimpleGrid>
+            {!hasOrders && !isLoading && <EmptyResult onClick={resetFilters} />}
 
             {hasOrders && (
                 <Pagination
