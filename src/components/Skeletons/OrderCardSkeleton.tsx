@@ -1,5 +1,4 @@
 import { Card, Divider, Group, Skeleton } from '@mantine/core';
-import React from 'react';
 
 export const OrderCardSkeleton = () => {
     return (

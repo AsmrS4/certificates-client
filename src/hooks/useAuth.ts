@@ -18,10 +18,8 @@ export const useAuth = (): UseAuth => {
     const handleValidateSession = async () => {
         try {
             context.setLoading(true);
-            const res = await fetchSession();
-            console.log(res);
-            const session = await exchangeSession();
-            console.log(session);
+            await fetchSession();
+            await exchangeSession();
             context.setIsAuthenticated(true);
             clearError();
         } catch (error) {

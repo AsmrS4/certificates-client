@@ -34,6 +34,7 @@ export const CertificatesPage = () => {
     const [typeValue, setTypeValue] = useState<string | null>(null);
 
     const handleApplyFilters = () => {
+        if (isLoading) return;
         handleStatus(statusValue ?? '');
         handleType(typeValue ?? '');
     };
@@ -75,7 +76,6 @@ export const CertificatesPage = () => {
                     size='md'
                     radius='md'
                     onClick={handleApplyFilters}
-                    disabled={isLoading}
                 >
                     Применить
                 </Button>
