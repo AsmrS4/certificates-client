@@ -1,25 +1,35 @@
+import { fetchOrderedCertificateDetails } from '@/api/certificates';
 import type { CertificateOrder } from '@/models/certificates';
 import { useEffect, useState } from 'react';
+import { useErrorHandler } from './useErrorHandler';
 
 export const useFetchDetails = (orderId: string | undefined) => {
     const [order, setOrder] = useState<CertificateOrder | null>(null);
+    const [isLoading, setLoading] = useState<boolean>(false);
+    const { errorMessage, handleError, clearError } = useErrorHandler();
+
     const fetchDetails = async () => {
-        setOrder({
-            id: 123,
-            student_id: 10,
-            application_status: 'Prepare',
-            certificate_type: 'Academic',
-            obtain_method: 'Electronic',
-            rejection_reason: '',
-            created_at: '2026-12-12T00:12:23',
-        });
+        clearError();
+        setLoading(true);
+        try {
+            const id = parseInt(orderId || '1');
+            const res: CertificateOrder = await fetchOrderedCertificateDetails(id);
+            setOrder({ ...res });
+        } catch (error) {
+            handleError(error);
+        } finally {
+            setLoading(false);
+        }
     };
+
     const handleProcess = async (): Promise<boolean> => {
         return true;
     };
+
     const handleReject = async (): Promise<boolean> => {
         return true;
     };
+
     useEffect(() => {
         let isMounted = true;
         const init = async (): Promise<void> => {
@@ -33,5 +43,5 @@ export const useFetchDetails = (orderId: string | undefined) => {
         };
     }, [orderId]);
 
-    return { order, handleProcess, handleReject };
+    return { order, handleProcess, handleReject, isLoading, errorMessage };
 };
