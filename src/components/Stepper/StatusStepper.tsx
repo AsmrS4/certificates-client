@@ -28,7 +28,7 @@ export const StatusStepper = ({ active }: StatusStepperProps) => {
                 <Stepper.Step label={'Шаг 1'} description={'Отправлена на модерацию'} />
                 <Stepper.Step
                     label={'Шаг 2'}
-                    description={'Отклонена'}
+                    description={'Принять заявку'}
                     color='red'
                     styles={{
                         stepIcon: { borderColor: 'red', backgroundColor: 'red', color: 'white' },

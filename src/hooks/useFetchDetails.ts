@@ -8,7 +8,7 @@ export const useFetchDetails = (orderId: string | undefined) => {
     const [isLoading, setLoading] = useState<boolean>(false);
     const { errorMessage, handleError, clearError } = useErrorHandler();
 
-    const fetchDetails = async () => {
+    const fetchDetails = async (): Promise<void> => {
         clearError();
         setLoading(true);
         try {
@@ -22,12 +22,8 @@ export const useFetchDetails = (orderId: string | undefined) => {
         }
     };
 
-    const handleProcess = async (): Promise<boolean> => {
-        return true;
-    };
-
-    const handleReject = async (): Promise<boolean> => {
-        return true;
+    const handleChangeOrderStatus = (status: string): void => {
+        setOrder((prev) => ({ ...prev!, application_status: status }));
     };
 
     useEffect(() => {
@@ -43,5 +39,5 @@ export const useFetchDetails = (orderId: string | undefined) => {
         };
     }, [orderId]);
 
-    return { order, handleProcess, handleReject, isLoading, errorMessage };
+    return { order, isLoading, errorMessage, handleChangeOrderStatus };
 };

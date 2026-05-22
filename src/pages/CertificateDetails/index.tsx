@@ -1,3 +1,4 @@
+import { CommentModal } from '@/components/Modal/CommentModal';
 import { FieldSkeleton } from '@/components/Skeletons/FieldSkeleton';
 import { StatusStepper } from '@/components/Stepper/StatusStepper';
 import { useFetchDetails } from '@/hooks/useFetchDetails';
@@ -5,15 +6,31 @@ import { useOrderStatus } from '@/hooks/useOrderStatus';
 import { formatDate } from '@/utils/dateFormatter';
 import { obtainMap, typeMap } from '@/utils/enumMapper';
 import { statusMap } from '@/utils/statusMapper';
-import { Text, Badge, Button, CheckIcon, Divider, FileInput, Group, Paper } from '@mantine/core';
+import {
+    Text,
+    Badge,
+    Button,
+    CheckIcon,
+    Divider,
+    FileInput,
+    Group,
+    Paper,
+    useModalsStack,
+} from '@mantine/core';
 import { XIcon } from '@phosphor-icons/react';
 import { useParams } from 'react-router-dom';
 
 export const CertificateDetails = () => {
     const { id } = useParams();
-    const { order, handleProcess, handleReject, isLoading, errorMessage } = useFetchDetails(id);
+    const { order, isLoading, errorMessage, handleChangeOrderStatus } = useFetchDetails(id);
+    const stack = useModalsStack(['reject-action', 'confirm-action']);
     const status = order && statusMap[order.application_status];
-    const { currentStepStatus } = useOrderStatus(id, order);
+    const {
+        currentStepStatus,
+        isLoading: isProcessStatus,
+        handleProcessOrder,
+        handleRejectOrder,
+    } = useOrderStatus(id, order, handleChangeOrderStatus);
 
     return (
         <div className='flex flex-col w-full p-8 gap-12'>
@@ -30,8 +47,8 @@ export const CertificateDetails = () => {
             {errorMessage ? (
                 <div>Не удалось получить данные</div>
             ) : (
-                <Paper shadow='xs' p='xl' withBorder>
-                    <header className='flex flex-row items-center justify-between'>
+                <Paper shadow='xs' p='md' px='lg' withBorder>
+                    <header className='flex flex-row items-center justify-between h-16 px-4'>
                         <div className='flex flex-row items-center gap-8'>
                             <h1 className='font-semibold text-3xl flex flex-row items-center'>
                                 {`Заказ номер #`}
@@ -51,7 +68,8 @@ export const CertificateDetails = () => {
                                     color='green'
                                     size='md'
                                     rightSection={<CheckIcon size={16} />}
-                                    onClick={handleProcess}
+                                    onClick={handleProcessOrder}
+                                    disabled={isProcessStatus}
                                 >
                                     Принять
                                 </Button>
@@ -59,7 +77,8 @@ export const CertificateDetails = () => {
                                     color='red'
                                     size='md'
                                     rightSection={<XIcon size={18} />}
-                                    onClick={handleReject}
+                                    onClick={() => stack.open('reject-action')}
+                                    disabled={isProcessStatus}
                                 >
                                     Отклонить
                                 </Button>
@@ -78,7 +97,7 @@ export const CertificateDetails = () => {
                     </header>
                     <Divider className='my-4' />
                     <Group mt='sm'>
-                        <div className='flex flex-row gap-10 w-full'>
+                        <div className='flex flex-row gap-10 w-full  px-4'>
                             <div key={order?.certificate_type}>
                                 <Text size='sm' c='dimmed'>
                                     Тип справки
@@ -117,6 +136,7 @@ export const CertificateDetails = () => {
                     </Group>
                 </Paper>
             )}
+            <CommentModal stack={stack} callback={handleRejectOrder} />
         </div>
     );
 };

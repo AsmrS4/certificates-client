@@ -34,11 +34,14 @@ export const fetchOrderedCertificateDetails = async (
     }
 };
 
-export const rejectOrderedCertificate = async (orderId: number): Promise<boolean> => {
+export const rejectOrderedCertificate = async (
+    orderId: number,
+    reason: string,
+): Promise<boolean> => {
     try {
         const res: AxiosResponse<boolean> = await axios.delete(
             `/api/triggers/http/certificates/api/certificates/reject?id=${orderId}`,
-            {},
+            { data: { reason: reason } },
         );
         return res.data;
     } catch (error) {
