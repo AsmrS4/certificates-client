@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { OrderCard } from '@/components/OrderCard';
 import { useCertificates } from '@/hooks/useCertificates';
 import { Button, Pagination, Select, SimpleGrid } from '@mantine/core';
 import { FunnelSimpleIcon } from '@phosphor-icons/react';
 import { OrderCardSkeleton } from '@/components/Skeletons/OrderCardSkeleton';
 import { EmptyResult } from '@/components/Result/EmptyResult';
+import { useNotification } from '@/hooks/useNotification';
 
 const statusOptions = [
     { value: 'Pending', label: 'Новые' },
@@ -23,6 +24,7 @@ const typeOptions = [
 export const CertificatesPage = () => {
     const {
         isLoading,
+        errorMessage,
         certificates,
         pagination,
         handleSelectOrder,
@@ -47,6 +49,11 @@ export const CertificatesPage = () => {
         setStatusValue(null);
         setTypeValue(null);
     };
+
+    const { handleErrorNotification } = useNotification();
+    useEffect(() => {
+        if (errorMessage) handleErrorNotification(errorMessage);
+    }, [errorMessage]);
 
     return (
         <div className='flex flex-col w-full p-8'>

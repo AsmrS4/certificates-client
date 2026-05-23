@@ -17,13 +17,13 @@ export const useCertificates = () => {
     const [isLoading, setLoading] = useState<boolean>(false);
     const { errorMessage, handleError, clearError } = useErrorHandler();
     const navigate = useNavigate();
+
     const handleSelectOrder = (id: number): void => {
         navigate(`/certificates/${id}`);
     };
     const updateFilters = (newParams: Partial<Params>) => {
         setParams((prev) => ({ ...prev, ...newParams, offset: 1 }));
     };
-
     const handleStatus = (status: string) => updateFilters({ status });
     const handleType = (type: string) => updateFilters({ type });
     const handleOffset = (offset: number) => setParams((prev) => ({ ...prev, offset }));

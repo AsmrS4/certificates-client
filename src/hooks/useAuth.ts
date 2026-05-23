@@ -15,6 +15,7 @@ export const useAuth = (): UseAuth => {
     if (context === undefined) {
         throw new Error('useAuth must be used within an AuthProvider');
     }
+
     const handleValidateSession = async () => {
         try {
             context.setLoading(true);
@@ -29,5 +30,6 @@ export const useAuth = (): UseAuth => {
             context.setLoading(false);
         }
     };
+
     return { context, handleValidateSession };
 };

@@ -2,6 +2,7 @@ import type { CertificateOrder } from '@/models/certificates';
 import { useEffect, useState } from 'react';
 import { useErrorHandler } from './useErrorHandler';
 import { processOrderedCertificate, rejectOrderedCertificate } from '@/api/certificates';
+import { useNotification } from './useNotification';
 
 export const useOrderStatus = (
     id: string | undefined,
@@ -9,14 +10,17 @@ export const useOrderStatus = (
     orderCallback: (status: string) => void,
 ) => {
     const [currentStepStatus, setStepStatus] = useState<number>(0);
-    const { errorMessage, handleError, clearError } = useErrorHandler();
     const [isLoading, setLoading] = useState<boolean>(false);
+    const { errorMessage, handleError, clearError } = useErrorHandler();
+    const { handleErrorNotification, handleSuccessNotification } = useNotification();
+
     const handleProcessOrder = async (): Promise<void> => {
         clearError();
         try {
             setLoading(true);
             const res: boolean = await processOrderedCertificate(order?.id || 0);
             if (res) orderCallback('Prepare');
+            handleSuccessNotification('Заявка принята в обработку');
         } catch (error) {
             handleError(error);
         } finally {
@@ -29,6 +33,7 @@ export const useOrderStatus = (
             setLoading(true);
             const res: boolean = await rejectOrderedCertificate(order?.id || 0, message);
             if (res) orderCallback('Rejected');
+            handleSuccessNotification('Заявка успешно отклонена');
         } catch (error) {
             handleError(error);
         } finally {
@@ -49,9 +54,14 @@ export const useOrderStatus = (
         }
         return setStepStatus(0);
     };
+
+    useEffect(() => {
+        if (errorMessage) handleErrorNotification(errorMessage);
+    }, [errorMessage]);
     useEffect(() => {
         handleStepStatus();
     }, [id, order?.application_status]);
+
     return {
         currentStepStatus,
         errorMessage,

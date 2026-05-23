@@ -1,6 +1,7 @@
 import { routes } from '@/router/routes';
 import { AppShell, Burger, Button, Group, NavLink } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
+import { Notifications } from '@mantine/notifications';
 import { CertificateIcon, SignOutIcon, StudentIcon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
@@ -29,6 +30,10 @@ export const Layout = () => {
     const handleSetActive = () => {
         const page = window.location.pathname.split('/').pop() || 'certificates';
         setActive(page);
+    };
+
+    const handleLogout = () => {
+        window.location.href = routes.auth.login;
     };
 
     useEffect(() => {
@@ -75,6 +80,7 @@ export const Layout = () => {
                                 leftSection={<SignOutIcon size={16} />}
                                 variant='subtle'
                                 radius='md'
+                                onClick={handleLogout}
                             >
                                 Выйти
                             </Button>

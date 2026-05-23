@@ -5,6 +5,7 @@ import { loginUser } from '@/api/auth';
 export const useLogin = () => {
     const { handleError, errorMessage, clearError } = useErrorHandler();
     const [isLoading, setLoading] = useState<boolean>(false);
+
     const handleLogin = async (): Promise<void> => {
         try {
             setLoading(true);
@@ -16,5 +17,6 @@ export const useLogin = () => {
             setLoading(false);
         }
     };
+
     return { isLoading, errorMessage, handleLogin };
 };

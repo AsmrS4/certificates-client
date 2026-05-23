@@ -23,6 +23,7 @@ import { useParams } from 'react-router-dom';
 export const CertificateDetails = () => {
     const { id } = useParams();
     const { order, isLoading, errorMessage, handleChangeOrderStatus } = useFetchDetails(id);
+
     const stack = useModalsStack(['reject-action', 'confirm-action']);
     const status = order && statusMap[order.application_status];
     const {

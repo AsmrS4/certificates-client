@@ -2,11 +2,13 @@ import { fetchOrderedCertificateDetails } from '@/api/certificates';
 import type { CertificateOrder } from '@/models/certificates';
 import { useEffect, useState } from 'react';
 import { useErrorHandler } from './useErrorHandler';
+import { useNotification } from './useNotification';
 
 export const useFetchDetails = (orderId: string | undefined) => {
     const [order, setOrder] = useState<CertificateOrder | null>(null);
     const [isLoading, setLoading] = useState<boolean>(false);
     const { errorMessage, handleError, clearError } = useErrorHandler();
+    const { handleErrorNotification } = useNotification();
 
     const fetchDetails = async (): Promise<void> => {
         clearError();
@@ -38,6 +40,10 @@ export const useFetchDetails = (orderId: string | undefined) => {
             isMounted = false;
         };
     }, [orderId]);
+
+    useEffect(() => {
+        if (errorMessage) handleErrorNotification(errorMessage);
+    }, [errorMessage]);
 
     return { order, isLoading, errorMessage, handleChangeOrderStatus };
 };
