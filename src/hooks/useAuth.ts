@@ -1,4 +1,4 @@
-import { exchangeSession, fetchSession } from '@/api/auth';
+import { fetchSession } from '@/api/auth';
 import type { AuthContextType } from '@/models/auth';
 import { AuthContext } from '@/router/AuthContext';
 import { useContext } from 'react';
@@ -6,7 +6,7 @@ import { useErrorHandler } from './useErrorHandler';
 
 interface UseAuth {
     context: AuthContextType;
-    handleValidateSession: () => {};
+    handleValidateSession: () => Promise<void>;
 }
 
 export const useAuth = (): UseAuth => {
@@ -16,13 +16,13 @@ export const useAuth = (): UseAuth => {
         throw new Error('useAuth must be used within an AuthProvider');
     }
 
-    const handleValidateSession = async () => {
+    const handleValidateSession = async (): Promise<void> => {
         try {
-            context.setLoading(true);
-            await fetchSession();
-            await exchangeSession();
-            context.setIsAuthenticated(true);
             clearError();
+            context.setLoading(true);
+            const res = await fetchSession();
+            console.log(res);
+            if (res) context.setIsAuthenticated(true);
         } catch (error) {
             handleError(error);
             context.setIsAuthenticated(false);

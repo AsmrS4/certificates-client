@@ -1,22 +1,18 @@
 import type { CertificateOrder, Certificates, Params } from '@/models/certificates';
 import type { AxiosResponse } from 'axios';
-import axios, { isAxiosError } from 'axios';
+import axios from 'axios';
 
 export const fetchOrderedCertificates = async (params: Params): Promise<Certificates> => {
     try {
         const res: AxiosResponse<Certificates> = await axios.get(
             `/api/triggers/http/certificates/api/certificates/all`,
             {
+                withCredentials: true,
                 params: { ...params },
             },
         );
-        const fullUrl = axios.getUri(res.config);
-        console.log('Request URL:', fullUrl);
         return res.data;
     } catch (error) {
-        if (isAxiosError(error)) {
-            console.log(error.response);
-        }
         throw error;
     }
 };
@@ -27,6 +23,9 @@ export const fetchOrderedCertificateDetails = async (
     try {
         const res: AxiosResponse<CertificateOrder> = await axios.get(
             `/api/triggers/http/certificates/api/certificates?id=${orderId}`,
+            {
+                withCredentials: true,
+            },
         );
         return res.data;
     } catch (error) {
@@ -41,7 +40,7 @@ export const rejectOrderedCertificate = async (
     try {
         const res: AxiosResponse<boolean> = await axios.delete(
             `/api/triggers/http/certificates/api/certificates/reject?id=${orderId}`,
-            { data: { reason: reason } },
+            { withCredentials: true, data: { reason: reason } },
         );
         return res.data;
     } catch (error) {
@@ -54,6 +53,7 @@ export const processOrderedCertificate = async (orderId: number): Promise<boolea
         const res: AxiosResponse<boolean> = await axios.post(
             `/api/triggers/http/certificates/api/certificates/process?id=${orderId}`,
             {},
+            { withCredentials: true },
         );
         return res.data;
     } catch (error) {

@@ -1,7 +1,10 @@
+import { logoutUser } from '@/api/auth';
+import { errors } from '@/constants/messages';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { useNotification } from '@/hooks/useNotification';
 import { routes } from '@/router/routes';
 import { AppShell, Burger, Button, Group, NavLink } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { Notifications } from '@mantine/notifications';
 import { CertificateIcon, SignOutIcon, StudentIcon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
@@ -26,14 +29,22 @@ const data = [
 export const Layout = () => {
     const [opened, { toggle }] = useDisclosure();
     const [active, setActive] = useState('certificates');
+    const { errorMessage, handleError, clearError } = useErrorHandler();
+    const { handleErrorNotification } = useNotification();
 
     const handleSetActive = () => {
         const page = window.location.pathname.split('/').pop() || 'certificates';
         setActive(page);
     };
 
-    const handleLogout = () => {
-        window.location.href = routes.auth.login;
+    const handleLogout = async () => {
+        try {
+            clearError();
+            const res = await logoutUser();
+            if (res) window.location.href = routes.auth.login;
+        } catch (error) {
+            handleError(error);
+        }
     };
 
     useEffect(() => {
@@ -43,6 +54,10 @@ export const Layout = () => {
             isMounted = false;
         };
     }, []);
+
+    useEffect(() => {
+        if (errorMessage) handleErrorNotification(errorMessage || errors.default);
+    }, [errorMessage]);
 
     const items = data.map((item, _) => (
         <NavLink

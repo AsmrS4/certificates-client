@@ -17,6 +17,20 @@ export default defineConfig(({ mode }) => {
                     target: API_URL,
                     changeOrigin: true,
                     secure: false,
+                    configure: (proxy, _options) => {
+                        proxy.on('proxyRes', (proxyRes, req, res) => {
+                            if (proxyRes.headers['set-cookie']) {
+                                const cookies = proxyRes.headers['set-cookie'].map(
+                                    (cookie) =>
+                                        cookie
+                                            .replace(/Domain=[^;]+;?/i, '') // удаляем Domain
+                                            .replace(/Secure;?\s?/i, '') // удаляем Secure
+                                            .replace(/SameSite=None;?\s?/i, 'SameSite=Lax;'), // заменяем None на Lax
+                                );
+                                proxyRes.headers['set-cookie'] = cookies;
+                            }
+                        });
+                    },
                 },
             },
         },

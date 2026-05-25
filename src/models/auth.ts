@@ -4,3 +4,7 @@ export interface AuthContextType {
     loading: boolean;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+export interface AuthResponse {
+    authenticated: boolean;
+}

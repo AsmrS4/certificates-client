@@ -6,9 +6,9 @@ import { useNavigate } from 'react-router-dom';
 
 export const useCertificates = () => {
     const [certificates, setCertificates] = useState<CertificateOrder[]>([]);
-    const [pagination, setPagination] = useState<Pagination>({ limit: 10, offset: 1, total: 0 });
+    const [pagination, setPagination] = useState<Pagination>({ limit: 8, offset: 1, total: 0 });
     const [params, setParams] = useState<Params>({
-        limit: 9,
+        limit: 8,
         offset: 1,
         status: '',
         type: '',
