@@ -7,7 +7,7 @@ import { AppShell, Burger, Button, Group, NavLink } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { CertificateIcon, SignOutIcon, StudentIcon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const data = [
     {
@@ -31,29 +31,28 @@ export const Layout = () => {
     const [active, setActive] = useState('certificates');
     const { errorMessage, handleError, clearError } = useErrorHandler();
     const { handleErrorNotification } = useNotification();
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    const handleSetActive = () => {
-        const page = window.location.pathname.split('/').pop() || 'certificates';
-        setActive(page);
+    const handleNavClick = (link: string, id: string) => {
+        setActive(id);
+        navigate(link);
     };
 
     const handleLogout = async () => {
         try {
             clearError();
             const res = await logoutUser();
-            if (res) window.location.href = routes.auth.login;
+            if (res) navigate(routes.auth.login);
         } catch (error) {
             handleError(error);
         }
     };
 
     useEffect(() => {
-        let isMounted = true;
-        if (isMounted) handleSetActive();
-        return () => {
-            isMounted = false;
-        };
-    }, []);
+        const currentPath = location.pathname.split('/').pop() || 'certificates';
+        setActive(currentPath);
+    }, [location]);
 
     useEffect(() => {
         if (errorMessage) handleErrorNotification(errorMessage || errors.default);
@@ -67,11 +66,15 @@ export const Layout = () => {
             label={item.label}
             description={item.description}
             leftSection={<item.icon size={16} />}
-            onClick={() => handleSetActive()}
+            onClick={(e) => {
+                e.preventDefault();
+                handleNavClick(item.link, item.id);
+            }}
             className='rounded-lg'
             variant='filled'
         />
     ));
+
     return (
         <AppShell
             header={{ height: 60 }}

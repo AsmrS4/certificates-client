@@ -7,4 +7,5 @@ export interface AuthContextType {
 
 export interface AuthResponse {
     authenticated: boolean;
+    user_id: number;
 }

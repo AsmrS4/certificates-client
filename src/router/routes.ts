@@ -1,18 +1,18 @@
 export const routes = {
     auth: {
-        login: '/sign-in',
-        oauth: '/oauth/login',
+        login: 'sign-in',
+        oauth: 'oauth/login',
     },
     root: '/',
     certificates: {
-        home: '/certificates',
-        recovery: '/recovery',
-        uploadFile: '/certificate/upload-file',
-        details: '/certificates/:id',
+        home: 'certificates',
+        recovery: 'recovery',
+        uploadFile: 'certificate/upload-file',
+        details: 'certificates/:id',
     },
     errors: {
-        forbidden: '/forbidden',
-        internal_server: '/server-error',
+        forbidden: 'forbidden',
+        internal_server: 'server-error',
         not_found: '*',
     },
 };

@@ -21,8 +21,7 @@ export const useAuth = (): UseAuth => {
             clearError();
             context.setLoading(true);
             const res = await fetchSession();
-            console.log(res);
-            if (res) context.setIsAuthenticated(true);
+            context.setIsAuthenticated(res.authenticated);
         } catch (error) {
             handleError(error);
             context.setIsAuthenticated(false);

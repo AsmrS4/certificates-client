@@ -1,11 +1,14 @@
 import type { AuthResponse } from '@/models/auth';
+import { routes } from '@/router/routes';
 import type { AxiosResponse } from 'axios';
 import axios from 'axios';
 
-export const loginUser = (): void => {
-    window.location.href = `/api/auth/tsu/start?return_to=${encodeURIComponent(location.pathname + location.search)}`;
-};
+export const BASENAME = '/plugins/certificates/app/';
 
+export const loginUser = (): void => {
+    const returnTo = `${BASENAME}${routes.certificates.home}`;
+    window.location.href = `/api/auth/tsu/start?return_to=${encodeURIComponent(returnTo)}`;
+};
 export const fetchSession = async (): Promise<AuthResponse> => {
     try {
         const res: AxiosResponse<AuthResponse> = await axios.get(`/api/auth/session`, {

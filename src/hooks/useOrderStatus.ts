@@ -1,8 +1,14 @@
 import type { CertificateOrder } from '@/models/certificates';
 import { useEffect, useState } from 'react';
 import { useErrorHandler } from './useErrorHandler';
-import { processOrderedCertificate, rejectOrderedCertificate } from '@/api/certificates';
+import {
+    finishProcessingPaperOrder,
+    processOrderedCertificate,
+    rejectOrderedCertificate,
+} from '@/api/certificates';
 import { useNotification } from './useNotification';
+import { uploadFile } from '@/api/file';
+import type { UploadedFile } from '@/models/file';
 
 export const useOrderStatus = (
     id: string | undefined,
@@ -13,7 +19,36 @@ export const useOrderStatus = (
     const [isLoading, setLoading] = useState<boolean>(false);
     const { errorMessage, handleError, clearError } = useErrorHandler();
     const { handleErrorNotification, handleSuccessNotification } = useNotification();
-
+    const handleFinishOrder = async (): Promise<void> => {
+        clearError();
+        try {
+            setLoading(true);
+            const res: boolean = await finishProcessingPaperOrder(order?.id || 0);
+            if (res) orderCallback('Done');
+            handleSuccessNotification('Заявка обработана');
+        } catch (error) {
+            handleError(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    const handleUploadCertificate = async (file: File): Promise<void> => {
+        clearError();
+        try {
+            setLoading(true);
+            const res: UploadedFile = await uploadFile({
+                pluginId: 'certificates',
+                file: file,
+                fileType: file.type,
+            });
+            if (res) orderCallback('Done');
+            handleSuccessNotification('Заявка обработана');
+        } catch (error) {
+            handleError(error);
+        } finally {
+            setLoading(false);
+        }
+    };
     const handleProcessOrder = async (): Promise<void> => {
         clearError();
         try {
@@ -50,7 +85,7 @@ export const useOrderStatus = (
             }
             if (order.application_status === 'Pending') return setStepStatus(1);
             if (order.application_status === 'Prepare') return setStepStatus(2);
-            if (order.application_status === 'Done') return setStepStatus(3);
+            if (order.application_status === 'Done') return setStepStatus(4);
         }
         return setStepStatus(0);
     };
@@ -69,5 +104,7 @@ export const useOrderStatus = (
         handleStepStatus,
         handleProcessOrder,
         handleRejectOrder,
+        handleFinishOrder,
+        handleUploadCertificate,
     };
 };

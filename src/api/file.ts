@@ -43,6 +43,18 @@ export const uploadFile = async ({
             withCredentials: true,
         },
     );
-
+    const res = await axios.post(
+        `/api/triggers/http/certificates/import`,
+        {
+            fileIds: [completeRes.data.id],
+        },
+        {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            withCredentials: true,
+        },
+    );
+    console.log(res);
     return completeRes.data;
 };

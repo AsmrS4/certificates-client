@@ -1,4 +1,4 @@
-import { Button, Group, Modal, Textarea, TextInput } from '@mantine/core';
+import { Button, Group, Modal, Textarea } from '@mantine/core';
 import { useState } from 'react';
 
 interface CommentModalProps {

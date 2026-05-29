@@ -60,3 +60,16 @@ export const processOrderedCertificate = async (orderId: number): Promise<boolea
         throw error;
     }
 };
+
+export const finishProcessingPaperOrder = async (orderId: number): Promise<boolean> => {
+    try {
+        const res: AxiosResponse<boolean> = await axios.post(
+            `/api/triggers/http/certificates/api/certificates/finish?id=${orderId}`,
+            {},
+            { withCredentials: true },
+        );
+        return res.data;
+    } catch (error) {
+        throw error;
+    }
+};

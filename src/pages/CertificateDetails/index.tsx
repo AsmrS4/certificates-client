@@ -17,13 +17,14 @@ import {
     Paper,
     useModalsStack,
 } from '@mantine/core';
-import { XIcon } from '@phosphor-icons/react';
+import { CloudArrowUpIcon, XIcon } from '@phosphor-icons/react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 export const CertificateDetails = () => {
     const { id } = useParams();
     const { order, isLoading, errorMessage, handleChangeOrderStatus } = useFetchDetails(id);
-
+    const [file, setFile] = useState<File | null>(null);
     const stack = useModalsStack(['reject-action', 'confirm-action']);
     const status = order && statusMap[order.application_status];
     const {
@@ -31,8 +32,12 @@ export const CertificateDetails = () => {
         isLoading: isProcessStatus,
         handleProcessOrder,
         handleRejectOrder,
+        handleFinishOrder,
+        handleUploadCertificate,
     } = useOrderStatus(id, order, handleChangeOrderStatus);
-
+    const handleFileChange = (payload: File | null) => {
+        setFile(payload);
+    };
     return (
         <div className='flex flex-col w-full p-8 gap-12'>
             {!errorMessage && (
@@ -86,15 +91,40 @@ export const CertificateDetails = () => {
                             </div>
                         )}
                         {order?.application_status === 'Prepare' &&
-                            order.obtain_method == 'Electronic' && (
-                                <FileInput
-                                    variant='filled'
+                            (order.obtain_method == 'Electronic' ? (
+                                <div className='flex flex-row items-center gap-2'>
+                                    <FileInput
+                                        variant='filled'
+                                        size='md'
+                                        clearable
+                                        label='Загрузить справку'
+                                        placeholder='Выберите файл'
+                                        value={file}
+                                        onChange={handleFileChange}
+                                    />
+                                    <Button
+                                        color='blue'
+                                        size='md'
+                                        rightSection={<CloudArrowUpIcon size={16} />}
+                                        onClick={() => {
+                                            file && handleUploadCertificate(file);
+                                        }}
+                                        disabled={isProcessStatus || file === null}
+                                    >
+                                        Отправить
+                                    </Button>
+                                </div>
+                            ) : (
+                                <Button
+                                    color='green'
                                     size='md'
-                                    clearable
-                                    label='Загрузить справку'
-                                    placeholder='Выберите файл'
-                                />
-                            )}
+                                    rightSection={<CheckIcon size={16} />}
+                                    onClick={handleFinishOrder}
+                                    disabled={isProcessStatus}
+                                >
+                                    Подтвердить готовность
+                                </Button>
+                            ))}
                     </header>
                     <Divider className='my-4' />
                     <Group mt='sm'>
