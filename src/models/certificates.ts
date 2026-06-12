@@ -1,6 +1,7 @@
 export interface CertificateOrder {
     id: number;
     student_id: number;
+    full_name: string;
     application_status: string;
     certificate_type: string;
     obtain_method: string;

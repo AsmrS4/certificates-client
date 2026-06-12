@@ -7,6 +7,7 @@ export const useErrorHandler = () => {
 
     const handleError = useCallback((error: unknown) => {
         if (isAxiosError(error)) {
+            console.log(error);
             console.log(error.response?.data);
             switch (error.response?.status) {
                 case 400:

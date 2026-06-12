@@ -1,8 +1,8 @@
 export interface UploadFileOptions {
+    orderId: number;
     pluginId: string;
     file: File;
     fileType?: string; // 'document', 'avatar', 'photo', 'video', 'audio'
-    onProgress?: (progress: number) => void;
 }
 
 export interface UploadedFile {

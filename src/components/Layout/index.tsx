@@ -77,8 +77,8 @@ export const Layout = () => {
 
     return (
         <AppShell
-            header={{ height: 60 }}
-            navbar={{ width: 324, breakpoint: 'sm', collapsed: { mobile: !opened } }}
+            header={{ height: 60, offset: true }}
+            navbar={{ width: 324, breakpoint: 'md', collapsed: { mobile: !opened } }}
             layout='default'
             className='w-full'
         >
@@ -107,11 +107,11 @@ export const Layout = () => {
                 </Group>
             </AppShell.Header>
             <AppShell.Navbar p='xs'>
-                <div className='flex flex-col items-center justify-between w-full box-border'>
+                <div className='flex flex-col items-center justify-between box-border'>
                     <nav className='flex flex-col gap-2 box-border w-full'>{items}</nav>
                 </div>
             </AppShell.Navbar>
-            <AppShell.Main>
+            <AppShell.Main className='overflow-y-auto h-dvh box-border'>
                 <Outlet />
             </AppShell.Main>
         </AppShell>

@@ -2,11 +2,13 @@ import type { UploadedFile, UploadFileOptions } from '@/models/file';
 import axios from 'axios';
 
 export const uploadFile = async ({
+    orderId,
     pluginId,
     file,
     fileType = 'document',
-    onProgress,
 }: UploadFileOptions): Promise<UploadedFile> => {
+    console.log(file);
+    console.log(fileType);
     const initRes = await axios.post(
         `/api/files/init`,
         {
@@ -18,23 +20,18 @@ export const uploadFile = async ({
         },
         { withCredentials: true },
     );
-
+    console.log('Init response:');
+    console.log(initRes);
     const init = initRes.data;
 
-    await axios({
+    const uploadTempRes = await axios(init.upload_url, {
         method: init.upload_method,
-        url: init.upload_url,
         headers: init.upload_headers,
         data: file,
-        onUploadProgress: (progressEvent) => {
-            if (onProgress && progressEvent.total) {
-                const percentCompleted = Math.round(
-                    (progressEvent.loaded * 100) / progressEvent.total,
-                );
-                onProgress(percentCompleted);
-            }
-        },
     });
+
+    console.log('Upload response:');
+    console.log(uploadTempRes);
 
     const completeRes = await axios.post<UploadedFile>(
         `/api/files/${init.file_id}/complete`,
@@ -43,18 +40,18 @@ export const uploadFile = async ({
             withCredentials: true,
         },
     );
-    const res = await axios.post(
-        `/api/triggers/http/certificates/import`,
+    console.log('Complete response:');
+    console.log(completeRes);
+    const uploadResFinish = await axios.post(
+        `/api/triggers/http/certificates/api/certificates/upload?id=${orderId}`,
         {
-            fileIds: [completeRes.data.id],
+            file_id: completeRes.data.id,
+            file_name: completeRes.data.name,
         },
         {
-            headers: {
-                'Content-Type': 'application/json',
-            },
             withCredentials: true,
         },
     );
-    console.log(res);
+    console.log(uploadResFinish);
     return completeRes.data;
 };

@@ -6,15 +6,16 @@ import { useNavigate } from 'react-router-dom';
 
 export const useCertificates = () => {
     const [certificates, setCertificates] = useState<CertificateOrder[]>([]);
-    const [pagination, setPagination] = useState<Pagination>({ limit: 8, offset: 1, total: 0 });
+    const [pagination, setPagination] = useState<Pagination>({ limit: 10, offset: 1, total: 0 });
     const [params, setParams] = useState<Params>({
-        limit: 8,
+        limit: 10,
         offset: 1,
         status: '',
         type: '',
         user_id: null,
     });
     const [isLoading, setLoading] = useState<boolean>(false);
+    const [isInitialized, setIsInitialized] = useState(false);
     const { errorMessage, handleError, clearError } = useErrorHandler();
     const navigate = useNavigate();
 
@@ -27,6 +28,11 @@ export const useCertificates = () => {
     const handleStatus = (status: string) => updateFilters({ status });
     const handleType = (type: string) => updateFilters({ type });
     const handleOffset = (offset: number) => setParams((prev) => ({ ...prev, offset }));
+    const initialize = (initialParams: Partial<Params>) => {
+        setParams((prev) => ({ ...prev, ...initialParams }));
+        setIsInitialized(true);
+    };
+
     const fetchCertificates = async (): Promise<void> => {
         try {
             setLoading(true);
@@ -49,11 +55,13 @@ export const useCertificates = () => {
                 await fetchCertificates();
             }
         };
-        init();
+        if (isInitialized) {
+            init();
+        }
         return () => {
             isMounted = false;
         };
-    }, [params]);
+    }, [params, isInitialized]);
 
     return {
         certificates,
@@ -64,5 +72,6 @@ export const useCertificates = () => {
         handleStatus,
         handleOffset,
         handleSelectOrder,
+        initialize,
     };
 };

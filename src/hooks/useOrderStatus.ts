@@ -37,6 +37,7 @@ export const useOrderStatus = (
         try {
             setLoading(true);
             const res: UploadedFile = await uploadFile({
+                orderId: order?.id || 0,
                 pluginId: 'certificates',
                 file: file,
                 fileType: file.type,
