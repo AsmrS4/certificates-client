@@ -1,6 +1,7 @@
 import type { CertificateOrder } from '@/models/certificates';
 import { Badge, Card, Divider, Group, Text } from '@mantine/core';
 import { statusMap } from '@/utils/statusMapper';
+import { typeMap } from '@/utils/enumMapper';
 
 interface OrderCardProps extends CertificateOrder {
     onClick: (id: number) => void;
@@ -30,6 +31,18 @@ export const OrderCard = (props: OrderCardProps) => {
                             <Text size='md' className='truncate'>
                                 {props?.full_name ? props?.full_name : 'Неизвестный получатель'}
                             </Text>
+                        </div>
+                        <div>
+                            <div>
+                                <Text size='xs' c='dimmed'>
+                                    {'Тип справки'}
+                                </Text>
+                                <Text size='md'>
+                                    {props?.certificate_type
+                                        ? typeMap[props?.certificate_type]
+                                        : 'Неизвестный тип'}
+                                </Text>
+                            </div>
                         </div>
                     </div>
                 </Group>

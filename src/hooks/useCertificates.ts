@@ -23,7 +23,20 @@ export const useCertificates = () => {
         navigate(`/certificates/${id}`);
     };
     const updateFilters = (newParams: Partial<Params>) => {
-        setParams((prev) => ({ ...prev, ...newParams, offset: 1 }));
+        setParams((prev) => {
+            const updated = { ...prev, ...newParams, offset: 1 };
+
+            if (
+                prev.offset === 1 &&
+                (Object.keys(newParams) as Array<keyof Params>).every(
+                    (key) => prev[key] === newParams[key],
+                )
+            ) {
+                return prev;
+            }
+
+            return updated;
+        });
     };
     const handleStatus = (status: string) => updateFilters({ status });
     const handleType = (type: string) => updateFilters({ type });

@@ -17,6 +17,7 @@ import {
     Paper,
     useModalsStack,
     Textarea,
+    Flex,
 } from '@mantine/core';
 import { CloudArrowUpIcon, XIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
@@ -186,25 +187,25 @@ export const CertificateDetails = () => {
                                 </div>
                             </div>
                         </Group>
+                        {order?.comment && (
+                            <>
+                                <Divider className='my-4' />
+                                <Flex direction='column' gap={'sm'} align='start' px={'sm'}>
+                                    <Text size='sm' c='dimmed'>
+                                        Комментарий к заказу
+                                    </Text>
+                                    <Textarea
+                                        placeholder='Комментарий'
+                                        variant='filled'
+                                        readOnly
+                                        minRows={4}
+                                        className='max-w-xl w-full'
+                                        value={order.comment}
+                                    />
+                                </Flex>
+                            </>
+                        )}
                     </Paper>
-                    {order?.rejection_reason && (
-                        <Textarea
-                            label='Причина отказа'
-                            labelProps={{
-                                size: 'md',
-                                color: 'dimmed',
-                                fw: 500,
-                                fs: 'md',
-                                style: { margin: '4px' },
-                            }}
-                            placeholder='Комментарий'
-                            variant='filled'
-                            readOnly
-                            minRows={4}
-                            className='max-w-xl w-full'
-                            value={order.rejection_reason}
-                        />
-                    )}
                 </div>
             )}
             <CommentModal stack={stack} callback={handleRejectOrder} />

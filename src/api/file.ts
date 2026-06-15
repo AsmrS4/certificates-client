@@ -7,8 +7,6 @@ export const uploadFile = async ({
     file,
     fileType = 'document',
 }: UploadFileOptions): Promise<UploadedFile> => {
-    console.log(file);
-    console.log(fileType);
     const initRes = await axios.post(
         `/api/files/init`,
         {
@@ -20,18 +18,14 @@ export const uploadFile = async ({
         },
         { withCredentials: true },
     );
-    console.log('Init response:');
-    console.log(initRes);
+
     const init = initRes.data;
 
-    const uploadTempRes = await axios(init.upload_url, {
+    await axios(init.upload_url, {
         method: init.upload_method,
         headers: init.upload_headers,
         data: file,
     });
-
-    console.log('Upload response:');
-    console.log(uploadTempRes);
 
     const completeRes = await axios.post<UploadedFile>(
         `/api/files/${init.file_id}/complete`,
@@ -40,9 +34,8 @@ export const uploadFile = async ({
             withCredentials: true,
         },
     );
-    console.log('Complete response:');
-    console.log(completeRes);
-    const uploadResFinish = await axios.post(
+
+    await axios.post(
         `/api/triggers/http/certificates/api/certificates/upload?id=${orderId}`,
         {
             file_id: completeRes.data.id,
@@ -52,6 +45,6 @@ export const uploadFile = async ({
             withCredentials: true,
         },
     );
-    console.log(uploadResFinish);
+
     return completeRes.data;
 };

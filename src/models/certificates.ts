@@ -5,6 +5,7 @@ export interface CertificateOrder {
     application_status: string;
     certificate_type: string;
     obtain_method: string;
+    comment?: string;
     rejection_reason: string;
     created_at: string;
 }
