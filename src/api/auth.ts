@@ -3,7 +3,7 @@ import { routes } from '@/router/routes';
 import type { AxiosResponse } from 'axios';
 import axios from 'axios';
 
-export const BASENAME = '/plugins/certificates/app/';
+export const BASENAME = '/plugins/certificates_plugin/app/';
 
 export const loginUser = (): void => {
     const returnTo = `${BASENAME}${routes.certificates.home}`;

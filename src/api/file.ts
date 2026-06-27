@@ -1,6 +1,8 @@
 import type { UploadedFile, UploadFileOptions } from '@/models/file';
 import axios from 'axios';
 
+const BASE_URI = '/api/triggers/http/certificates_plugin/api/certificates';
+
 export const uploadFile = async ({
     orderId,
     pluginId,
@@ -36,7 +38,7 @@ export const uploadFile = async ({
     );
 
     await axios.post(
-        `/api/triggers/http/certificates/api/certificates/upload?id=${orderId}`,
+        `${BASE_URI}/upload?id=${orderId}`,
         {
             file_id: completeRes.data.id,
             file_name: completeRes.data.name,
