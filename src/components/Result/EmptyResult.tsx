@@ -7,7 +7,7 @@ interface CallbackProps {
 
 export const EmptyResult = ({ onClick }: CallbackProps) => {
     return (
-        <div className='w-full px-8'>
+        <div className='w-full px-4'>
             <Card shadow='xs' withBorder w={'100%'} orientation='horizontal'>
                 <div className='flex flex-col w-full items-center gap-6 py-12 px-4'>
                     <div className='flex flex-col items-center gap-4'>

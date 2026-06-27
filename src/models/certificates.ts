@@ -26,5 +26,6 @@ export interface Params {
     offset: number;
     status: string;
     type: string;
+    search_name: string;
     user_id: number | null;
 }

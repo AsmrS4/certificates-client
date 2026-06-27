@@ -12,11 +12,13 @@ export const useCertificates = () => {
         offset: 1,
         status: '',
         type: '',
+        search_name: '',
         user_id: null,
     });
     const [isLoading, setLoading] = useState<boolean>(false);
     const [isInitialized, setIsInitialized] = useState(false);
     const { errorMessage, handleError, clearError } = useErrorHandler();
+    const [searchName, setSearchName] = useState<string>('');
     const navigate = useNavigate();
 
     const handleSelectOrder = (id: number): void => {
@@ -41,6 +43,10 @@ export const useCertificates = () => {
     const handleStatus = (status: string) => updateFilters({ status });
     const handleType = (type: string) => updateFilters({ type });
     const handleOffset = (offset: number) => setParams((prev) => ({ ...prev, offset }));
+    const handleSearchName = (value: string) => {
+        setParams((prev) => ({ ...prev, search_name: value, offset: 1 }));
+    };
+
     const initialize = (initialParams: Partial<Params>) => {
         setParams((prev) => ({ ...prev, ...initialParams }));
         setIsInitialized(true);
@@ -74,17 +80,20 @@ export const useCertificates = () => {
         return () => {
             isMounted = false;
         };
-    }, [params, isInitialized]);
+    }, [params, isInitialized, params.search_name]);
 
     return {
         certificates,
+        searchName,
         pagination,
         isLoading,
         errorMessage,
         handleType,
         handleStatus,
         handleOffset,
+        handleSearchName,
         handleSelectOrder,
+        setSearchName,
         initialize,
     };
 };
