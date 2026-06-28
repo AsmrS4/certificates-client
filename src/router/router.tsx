@@ -7,6 +7,8 @@ import PrivateRouter from './PrivateRouter';
 import { Layout } from '@/components/Layout';
 import { RecoveryPage } from '@/pages/Recovery';
 import { CertificateDetails } from '@/pages/CertificateDetails';
+import { CertificatesForeignPage } from '@/pages/CertificatesForeign';
+import { HistoryPage } from '@/pages/History';
 
 export const router = createBrowserRouter(
     [
@@ -33,6 +35,14 @@ export const router = createBrowserRouter(
                             path: routes.certificates.home,
                         },
                         {
+                            element: <CertificatesForeignPage />,
+                            path: routes.certificates.foreign,
+                        },
+                        {
+                            element: <HistoryPage />,
+                            path: routes.certificates.history,
+                        },
+                        {
                             element: <RecoveryPage />,
                             path: routes.certificates.recovery,
                         },
@@ -46,6 +56,6 @@ export const router = createBrowserRouter(
         },
     ],
     {
-        basename: '/plugins/certificates/app',
+        basename: '/plugins/certificates_plugin/app',
     },
 );

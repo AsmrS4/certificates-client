@@ -1,4 +1,4 @@
-import type { CertificateOrder, Certificates, Params } from '@/models/certificates';
+import type { CertificateDetails, Certificates, Params } from '@/models/certificates';
 import type { AxiosResponse } from 'axios';
 import axios from 'axios';
 
@@ -18,9 +18,9 @@ export const fetchOrderedCertificates = async (params: Params): Promise<Certific
 
 export const fetchOrderedCertificateDetails = async (
     orderId: number,
-): Promise<CertificateOrder> => {
+): Promise<CertificateDetails> => {
     try {
-        const res: AxiosResponse<CertificateOrder> = await axios.get(
+        const res: AxiosResponse<CertificateDetails> = await axios.get(
             `${BASE_URI}/details?id=${orderId}`,
             {
                 withCredentials: true,
@@ -50,7 +50,7 @@ export const rejectOrderedCertificate = async (
 export const processOrderedCertificate = async (orderId: number): Promise<boolean> => {
     try {
         const res: AxiosResponse<boolean> = await axios.post(
-            `${BASE_URI}/process?id=${orderId}`,
+            `${BASE_URI}/prepare?id=${orderId}`,
             {},
             { withCredentials: true },
         );

@@ -1,14 +1,14 @@
 import type { CertificateOrder } from '@/models/certificates';
-import { Badge, Card, Divider, Group, Text } from '@mantine/core';
+import { Badge, Card, Divider, Text, SimpleGrid } from '@mantine/core';
 import { statusMap } from '@/utils/statusMapper';
-import { typeMap } from '@/utils/enumMapper';
+import { typeMap, obtainMap } from '@/utils/enumMapper';
 
 interface OrderCardProps extends CertificateOrder {
     onClick: (id: number) => void;
 }
 
 export const OrderCard = (props: OrderCardProps) => {
-    const status = statusMap[props.application_status];
+    const status = statusMap[props.status];
     return (
         <Card shadow='xs' padding='sm' withBorder orientation='horizontal'>
             <div
@@ -22,30 +22,48 @@ export const OrderCard = (props: OrderCardProps) => {
                     </Badge>
                 </div>
                 <Divider />
-                <Group mt='sm'>
-                    <div className='flex flex-row gap-10 w-full'>
-                        <div>
-                            <Text size='xs' c='dimmed'>
-                                {'ФИО студента'}
-                            </Text>
-                            <Text size='md' className='truncate'>
-                                {props?.full_name ? props?.full_name : 'Неизвестный получатель'}
-                            </Text>
-                        </div>
-                        <div>
-                            <div>
-                                <Text size='xs' c='dimmed'>
-                                    {'Тип справки'}
-                                </Text>
-                                <Text size='md'>
-                                    {props?.certificate_type
-                                        ? typeMap[props?.certificate_type]
-                                        : 'Неизвестный тип'}
-                                </Text>
-                            </div>
-                        </div>
+                <div className='mt-2'>
+                    <Text size='xs' c='dimmed'>
+                        ФИО студента
+                    </Text>
+                    <Text size='md' className='truncate'>
+                        {props.full_name || 'Неизвестный получатель'}
+                    </Text>
+                </div>
+                <SimpleGrid cols={{ base: 1, sm: 2 }} spacing='sm' className='mt-1'>
+                    <div>
+                        <Text size='xs' c='dimmed'>
+                            Факультет
+                        </Text>
+                        <Text size='md' className='truncate'>
+                            {props.faculty_name || '—'}
+                        </Text>
                     </div>
-                </Group>
+                    <div>
+                        <Text size='xs' c='dimmed'>
+                            Группа
+                        </Text>
+                        <Text size='md'>{props.group_code || '—'}</Text>
+                    </div>
+                </SimpleGrid>
+                <SimpleGrid cols={{ base: 1, sm: 2 }} spacing='sm' className='mt-1'>
+                    <div>
+                        <Text size='xs' c='dimmed'>
+                            Тип справки
+                        </Text>
+                        <Text size='md'>
+                            {typeMap[props.type] || props.type || 'Неизвестный тип'}
+                        </Text>
+                    </div>
+                    <div>
+                        <Text size='xs' c='dimmed'>
+                            Способ получения
+                        </Text>
+                        <Text size='md'>
+                            {obtainMap[props.obtain_method] || props.obtain_method || '—'}
+                        </Text>
+                    </div>
+                </SimpleGrid>
             </div>
         </Card>
     );

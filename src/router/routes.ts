@@ -6,6 +6,8 @@ export const routes = {
     root: '/',
     certificates: {
         home: 'certificates',
+        foreign: 'foreign',
+        history: 'history',
         recovery: 'recovery',
         uploadFile: 'certificate/upload-file',
         details: 'certificates/:id',

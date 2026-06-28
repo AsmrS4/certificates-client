@@ -16,13 +16,15 @@ const statusOptions = [
 
 const typeOptions = [
     { value: 'study_period', label: 'Справка об обучении' },
+    { value: 'study_period_en', label: 'Справка об обучении (англ.)' },
     { value: 'call', label: 'Справка-вызов' },
     { value: 'name_change', label: 'Справка о смене ФИО' },
+    { value: 'mvd', label: 'Справка в МВД (ФМС)' },
     { value: 'recommendation_letter', label: 'Реком. письмо' },
     { value: 'common', label: 'Иная' },
 ];
 
-export const CertificatesPage = () => {
+export const CertificatesForeignPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const {
         isLoading,

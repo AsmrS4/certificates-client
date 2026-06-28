@@ -4,7 +4,14 @@ import { StatusStepper } from '@/components/Stepper/StatusStepper';
 import { useFetchDetails } from '@/hooks/useFetchDetails';
 import { useOrderStatus } from '@/hooks/useOrderStatus';
 import { formatDate } from '@/utils/dateFormatter';
-import { obtainMap, typeMap } from '@/utils/enumMapper';
+import {
+    educationFormMap,
+    fundingMap,
+    nationalityMap,
+    obtainMap,
+    studentPositionStatusMap,
+    typeMap,
+} from '@/utils/enumMapper';
 import { statusMap } from '@/utils/statusMapper';
 import {
     Text,
@@ -18,8 +25,14 @@ import {
     useModalsStack,
     Textarea,
     Flex,
+    Card,
+    List,
+    Anchor,
+    Title,
+    SimpleGrid,
 } from '@mantine/core';
-import { CloudArrowUpIcon, XIcon } from '@phosphor-icons/react';
+import { useMediaQuery } from '@mantine/hooks';
+import { CloudArrowUpIcon, XIcon, DownloadIcon, FileIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -29,6 +42,8 @@ export const CertificateDetails = () => {
     const [file, setFile] = useState<File | null>(null);
     const stack = useModalsStack(['reject-action', 'confirm-action']);
     const status = order && statusMap[order.application_status];
+    const isMobile = useMediaQuery('(max-width: 48em)');
+
     const {
         currentStepStatus,
         isLoading: isProcessStatus,
@@ -40,6 +55,107 @@ export const CertificateDetails = () => {
     const handleFileChange = (payload: File | null) => {
         setFile(payload);
     };
+
+    const renderFormData = () => {
+        if (!order?.form_data || Object.keys(order.form_data).length === 0) {
+            return null;
+        }
+        const entries = Object.entries(order.form_data).filter(([key]) => key !== 'attachments');
+        if (entries.length === 0) return null;
+
+        return (
+            <Card withBorder p='md' mt='md'>
+                <Title order={5} mb='sm'>
+                    Дополнительная информация
+                </Title>
+                <List>
+                    {entries.map(([key, value]) => (
+                        <List.Item key={key}>
+                            <Text size='sm' component='span' fw={500}>
+                                {key}:
+                            </Text>{' '}
+                            <Text size='sm' component='span'>
+                                {String(value)}
+                            </Text>
+                        </List.Item>
+                    ))}
+                </List>
+            </Card>
+        );
+    };
+
+    const renderAttachments = () => {
+        if (!order?.attachments || order.attachments.length === 0) {
+            return null;
+        }
+        return (
+            <Card withBorder p='md' mt='md'>
+                <Title order={5} mb='sm'>
+                    Прикреплённые файлы
+                </Title>
+                <List>
+                    {order.attachments.map((att, idx) => (
+                        <List.Item key={att.id}>
+                            <Group gap='md'>
+                                <FileIcon size={16} />
+                                <Text size='sm'>{att.file_name + '_' + idx + 1}</Text>
+                                <Text size='xs' c='dimmed'>
+                                    ({att.file_type})
+                                </Text>
+                                {att.file_url && (
+                                    <Badge
+                                        variant='light'
+                                        color='blue'
+                                        className='inline-flex items-center gap-1 px-2 py-1'
+                                    >
+                                        <Anchor
+                                            href={att.file_url}
+                                            target='_blank'
+                                            size='sm'
+                                            className='flex items-center gap-1 text-xs'
+                                            style={{ textDecoration: 'none', color: 'inherit' }}
+                                        >
+                                            <span className='text-xs !important'>Скачать</span>
+                                        </Anchor>
+                                    </Badge>
+                                )}
+                                <Text size='xs' c='dimmed'>
+                                    Загружено: {formatDate(att.uploaded_at)}
+                                </Text>
+                            </Group>
+                        </List.Item>
+                    ))}
+                </List>
+            </Card>
+        );
+    };
+
+    const renderCertificateFile = () => {
+        if (!order?.certificate_file) {
+            return null;
+        }
+        const file = order.certificate_file;
+        return (
+            <Card withBorder p='md' mt='md'>
+                <Title order={5} mb='sm'>
+                    Готовая справка
+                </Title>
+                <Group gap='sm'>
+                    <FileIcon size={16} />
+                    <Text size='sm'>{file.file_name}</Text>
+                    {file.storage_url && (
+                        <Anchor href={file.storage_url} target='_blank' size='sm'>
+                            <DownloadIcon size={14} /> Скачать
+                        </Anchor>
+                    )}
+                    <Text size='xs' c='dimmed'>
+                        Загружено: {formatDate(file.uploaded_at)}
+                    </Text>
+                </Group>
+            </Card>
+        );
+    };
+
     return (
         <div className='flex flex-col w-full p-8 gap-12'>
             {!errorMessage && (
@@ -57,9 +173,10 @@ export const CertificateDetails = () => {
             ) : (
                 <div className='flex flex-col w-full items-start gap-4'>
                     <Paper shadow='xs' p='md' px='lg' withBorder className='w-full'>
-                        <header className='flex flex-row items-center justify-between h-16 px-4'>
-                            <div className='flex flex-row items-center gap-8'>
-                                <h1 className='font-semibold text-3xl flex flex-row items-center'>
+                        {/* АДАПТИВНЫЙ HEADER */}
+                        <header className='flex flex-col sm:flex-row items-start sm:items-center justify-between px-4 py-2 sm:py-0 sm:h-16'>
+                            <div className='flex flex-wrap items-center gap-2 sm:gap-8 w-full sm:w-auto'>
+                                <h1 className='font-semibold text-xl sm:text-3xl flex flex-row items-center'>
                                     {`Заказ номер #`}
                                     {isLoading ? <FieldSkeleton w={40} /> : order?.id}
                                 </h1>
@@ -69,124 +186,209 @@ export const CertificateDetails = () => {
                                     <Badge
                                         color={status?.color}
                                         variant='dot'
-                                        size='xl'
+                                        size={isMobile ? 'md' : 'xl'}
                                         radius='lg'
                                     >
                                         {status?.label}
                                     </Badge>
                                 )}
                             </div>
-                            {order?.application_status === 'Pending' && (
-                                <div className='flex flex-row items-center gap-2'>
-                                    <Button
-                                        color='green'
-                                        size='md'
-                                        rightSection={<CheckIcon size={16} />}
-                                        onClick={handleProcessOrder}
-                                        disabled={isProcessStatus}
-                                    >
-                                        Принять
-                                    </Button>
-                                    <Button
-                                        color='red'
-                                        size='md'
-                                        rightSection={<XIcon size={18} />}
-                                        onClick={() => stack.open('reject-action')}
-                                        disabled={isProcessStatus}
-                                    >
-                                        Отклонить
-                                    </Button>
-                                </div>
-                            )}
-                            {order?.application_status === 'Prepare' &&
-                                (order.obtain_method == 'Electronic' ? (
-                                    <div className='flex flex-row items-end gap-2'>
-                                        <FileInput
-                                            variant='filled'
-                                            size='md'
-                                            clearable
-                                            label='Загрузить справку'
-                                            placeholder='Выберите файл'
-                                            value={file}
-                                            onChange={handleFileChange}
-                                        />
+                            <div className='flex flex-wrap items-center gap-2 mt-2 sm:mt-0 w-full sm:w-auto justify-start sm:justify-end'>
+                                {order?.application_status === 'Pending' && (
+                                    <>
                                         <Button
-                                            color='blue'
+                                            color='green'
                                             size='md'
-                                            rightSection={<CloudArrowUpIcon size={16} />}
-                                            onClick={() => {
-                                                file && handleUploadCertificate(file);
-                                            }}
-                                            disabled={isProcessStatus || file === null}
+                                            rightSection={<CheckIcon size={16} />}
+                                            onClick={handleProcessOrder}
+                                            disabled={isProcessStatus}
                                         >
-                                            Отправить
+                                            Принять
                                         </Button>
-                                    </div>
-                                ) : (
-                                    <Button
-                                        color='green'
-                                        size='md'
-                                        rightSection={<CheckIcon size={16} />}
-                                        onClick={handleFinishOrder}
-                                        disabled={isProcessStatus}
-                                    >
-                                        Подтвердить готовность
-                                    </Button>
-                                ))}
-                        </header>
-                        <Divider className='my-4' />
-                        <Group mt='sm'>
-                            <div className='flex flex-row gap-10 w-full px-4'>
-                                <div key={order?.full_name}>
-                                    <Text size='sm' c='dimmed'>
-                                        ФИО получателя
-                                    </Text>
-                                    {isLoading ? (
-                                        <FieldSkeleton w={240} />
+                                        <Button
+                                            color='red'
+                                            size='md'
+                                            rightSection={<XIcon size={18} />}
+                                            onClick={() => stack.open('reject-action')}
+                                            disabled={isProcessStatus}
+                                        >
+                                            Отклонить
+                                        </Button>
+                                    </>
+                                )}
+                                {order?.application_status === 'Prepare' &&
+                                    (order.obtain_method == 'Electronic' ? (
+                                        <>
+                                            <FileInput
+                                                variant='filled'
+                                                size='md'
+                                                clearable
+                                                label='Загрузить справку'
+                                                placeholder='Выберите файл'
+                                                value={file}
+                                                onChange={handleFileChange}
+                                                className='w-full sm:w-auto'
+                                            />
+                                            <Button
+                                                color='blue'
+                                                size='md'
+                                                rightSection={<CloudArrowUpIcon size={16} />}
+                                                onClick={() => {
+                                                    file && handleUploadCertificate(file);
+                                                }}
+                                                disabled={isProcessStatus || file === null}
+                                            >
+                                                Отправить
+                                            </Button>
+                                        </>
                                     ) : (
-                                        <Text size='lg'>
-                                            {order?.full_name
-                                                ? order?.full_name
-                                                : 'Неизвестный получатель'}
-                                        </Text>
-                                    )}
-                                </div>
-                                <div key={order?.certificate_type}>
-                                    <Text size='sm' c='dimmed'>
-                                        Тип справки
-                                    </Text>
-                                    {isLoading ? (
-                                        <FieldSkeleton />
-                                    ) : (
-                                        <Text size='lg'>
-                                            {typeMap[order?.certificate_type || 'Common']}
-                                        </Text>
-                                    )}
-                                </div>
-                                <div key={order?.obtain_method}>
-                                    <Text size='sm' c='dimmed'>
-                                        Способ получения
-                                    </Text>
-                                    {isLoading ? (
-                                        <FieldSkeleton />
-                                    ) : (
-                                        <Text size='lg'>
-                                            {obtainMap[order?.obtain_method || 'Paper']}
-                                        </Text>
-                                    )}
-                                </div>
-                                <div key={order?.created_at}>
-                                    <Text size='sm' c='dimmed'>
-                                        Дата и время
-                                    </Text>
-                                    {isLoading ? (
-                                        <FieldSkeleton />
-                                    ) : (
-                                        <Text size='lg'>{formatDate(order?.created_at)}</Text>
-                                    )}
-                                </div>
+                                        <Button
+                                            color='green'
+                                            size='md'
+                                            rightSection={<CheckIcon size={16} />}
+                                            onClick={handleFinishOrder}
+                                            disabled={isProcessStatus}
+                                        >
+                                            Подтвердить готовность
+                                        </Button>
+                                    ))}
                             </div>
-                        </Group>
+                        </header>
+
+                        <Divider className='my-4' />
+                        <SimpleGrid cols={{ base: 2, sm: 2, md: 2 }} spacing='lg' mt='sm' px='md'>
+                            <div>
+                                <Text size='sm' c='dimmed'>
+                                    ФИО получателя
+                                </Text>
+                                {isLoading ? (
+                                    <FieldSkeleton w={240} />
+                                ) : (
+                                    <Text size='lg'>
+                                        {order?.full_name || 'Неизвестный получатель'}
+                                    </Text>
+                                )}
+                            </div>
+                            <div>
+                                <Text size='sm' c='dimmed'>
+                                    Статус студента
+                                </Text>
+                                {isLoading ? (
+                                    <FieldSkeleton w={100} />
+                                ) : (
+                                    <Text size='lg'>
+                                        {studentPositionStatusMap[order?.position_status!] ||
+                                            'Неизвестен'}
+                                    </Text>
+                                )}
+                            </div>
+                        </SimpleGrid>
+                        <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing='md' mt='sm' px='sm'>
+                            <div>
+                                <Text size='sm' c='dimmed'>
+                                    Факультет
+                                </Text>
+                                {isLoading ? (
+                                    <FieldSkeleton w={150} />
+                                ) : (
+                                    <Text size='lg'>{order?.faculty_name || '—'}</Text>
+                                )}
+                            </div>
+                            <div>
+                                <Text size='sm' c='dimmed'>
+                                    Поток
+                                </Text>
+                                {isLoading ? (
+                                    <FieldSkeleton w={150} />
+                                ) : (
+                                    <Text size='lg'>{order?.stream_name || '—'}</Text>
+                                )}
+                            </div>
+                            <div>
+                                <Text size='sm' c='dimmed'>
+                                    Группа
+                                </Text>
+                                {isLoading ? (
+                                    <FieldSkeleton w={80} />
+                                ) : (
+                                    <Text size='lg'>{order?.group_code || '—'}</Text>
+                                )}
+                            </div>
+                            <div>
+                                <Text size='sm' c='dimmed'>
+                                    Гражданство
+                                </Text>
+                                {isLoading ? (
+                                    <FieldSkeleton w={100} />
+                                ) : (
+                                    <Text size='lg'>
+                                        {nationalityMap[order?.nationality_type!] || 'Не указано'}
+                                    </Text>
+                                )}
+                            </div>
+
+                            <div>
+                                <Text size='sm' c='dimmed'>
+                                    Финансирование
+                                </Text>
+                                {isLoading ? (
+                                    <FieldSkeleton w={100} />
+                                ) : (
+                                    <Text size='lg'>
+                                        {fundingMap[order?.funding_type!] || 'Не указано'}
+                                    </Text>
+                                )}
+                            </div>
+                            <div>
+                                <Text size='sm' c='dimmed'>
+                                    Форма обучения
+                                </Text>
+                                {isLoading ? (
+                                    <FieldSkeleton w={100} />
+                                ) : (
+                                    <Text size='lg'>
+                                        {educationFormMap[order?.education_form!] || 'Не указана'}
+                                    </Text>
+                                )}
+                            </div>
+                        </SimpleGrid>
+                        <Divider className='my-4' />
+                        <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing='lg' mt='sm' px='md'>
+                            <div>
+                                <Text size='sm' c='dimmed'>
+                                    Тип справки
+                                </Text>
+                                {isLoading ? (
+                                    <FieldSkeleton />
+                                ) : (
+                                    <Text size='lg'>
+                                        {typeMap[order?.certificate_type || 'Common']}
+                                    </Text>
+                                )}
+                            </div>
+                            <div>
+                                <Text size='sm' c='dimmed'>
+                                    Способ получения
+                                </Text>
+                                {isLoading ? (
+                                    <FieldSkeleton />
+                                ) : (
+                                    <Text size='lg'>
+                                        {obtainMap[order?.obtain_method || 'Paper']}
+                                    </Text>
+                                )}
+                            </div>
+                            <div>
+                                <Text size='sm' c='dimmed'>
+                                    Дата обращения
+                                </Text>
+                                {isLoading ? (
+                                    <FieldSkeleton />
+                                ) : (
+                                    <Text size='lg'>{formatDate(order?.created_at)}</Text>
+                                )}
+                            </div>
+                        </SimpleGrid>
                         {order?.comment && (
                             <>
                                 <Divider className='my-4' />
@@ -205,6 +407,9 @@ export const CertificateDetails = () => {
                                 </Flex>
                             </>
                         )}
+                        {!isLoading && renderFormData()}
+                        {!isLoading && renderAttachments()}
+                        {!isLoading && renderCertificateFile()}
                     </Paper>
                 </div>
             )}

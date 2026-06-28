@@ -1,4 +1,4 @@
-import type { CertificateOrder } from '@/models/certificates';
+import type { CertificateDetails } from '@/models/certificates';
 import { useEffect, useState } from 'react';
 import { useErrorHandler } from './useErrorHandler';
 import {
@@ -12,7 +12,7 @@ import type { UploadedFile } from '@/models/file';
 
 export const useOrderStatus = (
     id: string | undefined,
-    order: CertificateOrder | null,
+    order: CertificateDetails | null,
     orderCallback: (status: string) => void,
 ) => {
     const [currentStepStatus, setStepStatus] = useState<number>(0);

@@ -6,13 +6,13 @@ import { useNavigate } from 'react-router-dom';
 
 export const useCertificates = () => {
     const [certificates, setCertificates] = useState<CertificateOrder[]>([]);
-    const [pagination, setPagination] = useState<Pagination>({ limit: 10, offset: 1, total: 0 });
+    const [pagination, setPagination] = useState<Pagination>({ limit: 10, offset: 0, total: 0 });
     const [params, setParams] = useState<Params>({
         limit: 10,
-        offset: 1,
+        offset: 0,
         status: '',
         type: '',
-        search_name: '',
+        full_name: '',
         user_id: null,
     });
     const [isLoading, setLoading] = useState<boolean>(false);
@@ -26,10 +26,10 @@ export const useCertificates = () => {
     };
     const updateFilters = (newParams: Partial<Params>) => {
         setParams((prev) => {
-            const updated = { ...prev, ...newParams, offset: 1 };
+            const updated = { ...prev, ...newParams, offset: 0 };
 
             if (
-                prev.offset === 1 &&
+                prev.offset === 0 &&
                 (Object.keys(newParams) as Array<keyof Params>).every(
                     (key) => prev[key] === newParams[key],
                 )
@@ -44,7 +44,7 @@ export const useCertificates = () => {
     const handleType = (type: string) => updateFilters({ type });
     const handleOffset = (offset: number) => setParams((prev) => ({ ...prev, offset }));
     const handleSearchName = (value: string) => {
-        setParams((prev) => ({ ...prev, search_name: value, offset: 1 }));
+        setParams((prev) => ({ ...prev, full_name: value, offset: 0 }));
     };
 
     const initialize = (initialParams: Partial<Params>) => {
@@ -80,7 +80,7 @@ export const useCertificates = () => {
         return () => {
             isMounted = false;
         };
-    }, [params, isInitialized, params.search_name]);
+    }, [params, isInitialized, params.full_name]);
 
     return {
         certificates,

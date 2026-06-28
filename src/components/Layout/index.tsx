@@ -5,17 +5,31 @@ import { useNotification } from '@/hooks/useNotification';
 import { routes } from '@/router/routes';
 import { AppShell, Burger, Button, Group, NavLink } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { CertificateIcon, SignOutIcon, StudentIcon } from '@phosphor-icons/react';
+import { CertificateIcon, SignOutIcon, StudentIcon, ArchiveIcon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const data = [
     {
         icon: CertificateIcon,
-        label: 'Заказы справок',
+        label: 'Заказы справок(РФ)',
         id: 'certificates',
         link: routes.certificates.home,
         description: 'заявки от студентов',
+    },
+    {
+        icon: CertificateIcon,
+        label: 'Заказы справок(Англ.)',
+        id: 'foreign',
+        link: routes.certificates.foreign,
+        description: 'заявки от студентов',
+    },
+    {
+        icon: ArchiveIcon,
+        label: 'История заказов',
+        id: 'history',
+        link: routes.certificates.history,
+        description: 'обработанные заявки',
     },
     {
         icon: StudentIcon,
