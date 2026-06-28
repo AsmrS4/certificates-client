@@ -157,8 +157,8 @@ export const CertificateDetails = () => {
     };
 
     return (
-        <div className='flex flex-col w-full p-8 gap-12'>
-            {!errorMessage && (
+        <div className='flex flex-col w-full py-8 px-2 sm:px-8 gap-12'>
+            {!errorMessage && !isMobile && (
                 <>
                     <h1 className='font-semibold text-3xl flex flex-row items-center'>
                         {`Текущий статус заявки`}

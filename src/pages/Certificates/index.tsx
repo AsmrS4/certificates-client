@@ -157,7 +157,7 @@ export const CertificatesPage = () => {
     }, [errorMessage]);
 
     return (
-        <div className='flex flex-col w-full p-8 overflow-y-scroll h-full'>
+        <div className='flex flex-col w-full py-8 px-2 overflow-y-scroll h-full'>
             <div className='w-full flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 px-2'>
                 <Input
                     size='md'

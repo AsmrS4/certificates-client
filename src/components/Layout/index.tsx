@@ -36,7 +36,7 @@ const data = [
         label: 'Восстановление',
         id: 'recovery',
         link: routes.certificates.recovery,
-        description: 'заявки на восстановление студентов',
+        description: 'восстановление студентов',
     },
 ];
 
@@ -92,7 +92,7 @@ export const Layout = () => {
     return (
         <AppShell
             header={{ height: 60, offset: true }}
-            navbar={{ width: 324, breakpoint: 'md', collapsed: { mobile: !opened } }}
+            navbar={{ width: 256, breakpoint: 'sm', collapsed: { mobile: !opened } }}
             layout='default'
             className='w-full'
         >
