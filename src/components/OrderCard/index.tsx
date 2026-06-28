@@ -33,17 +33,17 @@ export const OrderCard = (props: OrderCardProps) => {
                 <SimpleGrid cols={{ base: 1, sm: 2 }} spacing='sm' className='mt-1'>
                     <div>
                         <Text size='xs' c='dimmed'>
+                            Группа
+                        </Text>
+                        <Text size='md'>{props.group_code || '—'}</Text>
+                    </div>
+                    <div>
+                        <Text size='xs' c='dimmed'>
                             Факультет
                         </Text>
                         <Text size='md' className='truncate'>
                             {props.faculty_name || '—'}
                         </Text>
-                    </div>
-                    <div>
-                        <Text size='xs' c='dimmed'>
-                            Группа
-                        </Text>
-                        <Text size='md'>{props.group_code || '—'}</Text>
                     </div>
                 </SimpleGrid>
                 <SimpleGrid cols={{ base: 1, sm: 2 }} spacing='sm' className='mt-1'>

@@ -173,7 +173,6 @@ export const CertificateDetails = () => {
             ) : (
                 <div className='flex flex-col w-full items-start gap-4'>
                     <Paper shadow='xs' p='md' px='lg' withBorder className='w-full'>
-                        {/* АДАПТИВНЫЙ HEADER */}
                         <header className='flex flex-col sm:flex-row items-start sm:items-center justify-between px-4 py-2 sm:py-0 sm:h-16'>
                             <div className='flex flex-wrap items-center gap-2 sm:gap-8 w-full sm:w-auto'>
                                 <h1 className='font-semibold text-xl sm:text-3xl flex flex-row items-center'>
@@ -197,17 +196,18 @@ export const CertificateDetails = () => {
                                 {order?.application_status === 'Pending' && (
                                     <>
                                         <Button
+                                            variant='light'
                                             color='green'
-                                            size='md'
-                                            rightSection={<CheckIcon size={16} />}
+                                            size='sm'
                                             onClick={handleProcessOrder}
                                             disabled={isProcessStatus}
                                         >
                                             Принять
                                         </Button>
                                         <Button
+                                            variant='light'
                                             color='red'
-                                            size='md'
+                                            size='sm'
                                             rightSection={<XIcon size={18} />}
                                             onClick={() => stack.open('reject-action')}
                                             disabled={isProcessStatus}
@@ -218,10 +218,10 @@ export const CertificateDetails = () => {
                                 )}
                                 {order?.application_status === 'Prepare' &&
                                     (order.obtain_method == 'Electronic' ? (
-                                        <>
+                                        <div className='flex flex-row items-end gap-2'>
                                             <FileInput
                                                 variant='filled'
-                                                size='md'
+                                                size='sm'
                                                 clearable
                                                 label='Загрузить справку'
                                                 placeholder='Выберите файл'
@@ -231,7 +231,7 @@ export const CertificateDetails = () => {
                                             />
                                             <Button
                                                 color='blue'
-                                                size='md'
+                                                size='sm'
                                                 rightSection={<CloudArrowUpIcon size={16} />}
                                                 onClick={() => {
                                                     file && handleUploadCertificate(file);
@@ -240,11 +240,11 @@ export const CertificateDetails = () => {
                                             >
                                                 Отправить
                                             </Button>
-                                        </>
+                                        </div>
                                     ) : (
                                         <Button
                                             color='green'
-                                            size='md'
+                                            size='sm'
                                             rightSection={<CheckIcon size={16} />}
                                             onClick={handleFinishOrder}
                                             disabled={isProcessStatus}

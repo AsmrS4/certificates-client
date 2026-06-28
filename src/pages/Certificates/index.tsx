@@ -1,8 +1,9 @@
 import { useEffect, useState, type ChangeEvent } from 'react';
 import { OrderCard } from '@/components/OrderCard';
 import { useCertificates } from '@/hooks/useCertificates';
-import { Button, Input, Pagination, Select, SimpleGrid } from '@mantine/core';
-import { ArrowClockwiseIcon, FunnelSimpleIcon } from '@phosphor-icons/react';
+import { Button, Input, Pagination, Select, SimpleGrid, Modal, Stack } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { FunnelSimpleIcon } from '@phosphor-icons/react';
 import { OrderCardSkeleton } from '@/components/Skeletons/OrderCardSkeleton';
 import { EmptyResult } from '@/components/Result/EmptyResult';
 import { useNotification } from '@/hooks/useNotification';
@@ -35,6 +36,9 @@ export const CertificatesPage = () => {
         handleType,
         setSearchName,
         handleSearchName,
+        handleNationality,
+        handleFacultyName,
+        handleGroupCode,
         handleOffset,
         initialize,
     } = useCertificates();
@@ -42,8 +46,39 @@ export const CertificatesPage = () => {
     const hasOrders = certificates && certificates.length > 0;
     const [statusValue, setStatusValue] = useState<string | null>(null);
     const [typeValue, setTypeValue] = useState<string | null>(null);
+    const [nationalityValue, setNationalityValue] = useState<string | null>('domestic');
+    const [facultyValue, setFacultyValue] = useState<string>('');
+    const [groupValue, setGroupValue] = useState<string>('');
 
-    const debouncedSearchName = useDebounce(searchName, 500);
+    const [filtersOpened, { open: openFilters, close: closeFilters }] = useDisclosure(false);
+
+    const debouncedSearchName = useDebounce(searchName, 700);
+
+    useEffect(() => {
+        const statusParam = searchParams.get('status') || '';
+        const typeParam = searchParams.get('type') || '';
+        const pageParam = searchParams.get('page');
+        const searchNameParam = searchParams.get('search') || '';
+        const facultyParam = searchParams.get('faculty') || '';
+        const groupParam = searchParams.get('group') || '';
+        const page = pageParam ? parseInt(pageParam, 10) : 0;
+
+        setStatusValue(statusParam || null);
+        setTypeValue(typeParam || null);
+        setSearchName(searchNameParam || '');
+
+        setFacultyValue(facultyParam || '');
+        setGroupValue(groupParam || '');
+
+        initialize({
+            status: statusParam,
+            type: typeParam,
+            offset: page,
+            nationality_type: 'domestic',
+            faculty_name: facultyParam,
+            group_code: groupParam,
+        });
+    }, []);
 
     useEffect(() => {
         if (debouncedSearchName !== undefined) {
@@ -59,24 +94,6 @@ export const CertificatesPage = () => {
         }
     }, [debouncedSearchName]);
 
-    useEffect(() => {
-        const statusParam = searchParams.get('status') || '';
-        const typeParam = searchParams.get('type') || '';
-        const pageParam = searchParams.get('page');
-        const searchNameParam = searchParams.get('search') || '';
-        const page = pageParam ? parseInt(pageParam, 10) : 0;
-
-        setStatusValue(statusParam || null);
-        setTypeValue(typeParam || null);
-        setSearchName(searchNameParam || '');
-
-        initialize({
-            status: statusParam,
-            type: typeParam,
-            offset: page,
-        });
-    }, []);
-
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
         setSearchName(val);
@@ -89,20 +106,26 @@ export const CertificatesPage = () => {
         if (statusValue) newParams.set('status', statusValue);
         if (typeValue) newParams.set('type', typeValue);
         if (searchName) newParams.set('search', searchName);
+        if (nationalityValue) newParams.set('nationality', nationalityValue);
+        if (facultyValue) newParams.set('faculty', facultyValue);
+        if (groupValue) newParams.set('group', groupValue);
         newParams.set('page', '0');
         setSearchParams(newParams);
 
         handleStatus(statusValue ?? '');
         handleType(typeValue ?? '');
         handleSearchName(searchName ?? '');
+        handleFacultyName(facultyValue);
+        handleGroupCode(groupValue);
+        closeFilters();
     };
 
     const handlePageChange = (page: number) => {
-        const selectedPage = page - 1 < 0 ? 0 : page--;
+        const selectedPage = page - 1 < 0 ? 0 : page - 1;
         const newParams = new URLSearchParams(searchParams);
         newParams.set('page', selectedPage.toString());
         setSearchParams(newParams);
-        handleOffset(page);
+        handleOffset(selectedPage);
     };
 
     const resetFilters = () => {
@@ -110,10 +133,15 @@ export const CertificatesPage = () => {
         setStatusValue(null);
         setTypeValue(null);
         setSearchName('');
-
+        setNationalityValue('domestic');
+        setFacultyValue('');
+        setGroupValue('');
         handleStatus('');
         handleType('');
         handleSearchName('');
+        handleNationality(null);
+        handleFacultyName('');
+        handleGroupCode('');
     };
 
     const handlePaginationTotal = (): number => {
@@ -130,17 +158,86 @@ export const CertificatesPage = () => {
 
     return (
         <div className='flex flex-col w-full p-8 overflow-y-scroll h-full'>
-            <div className='flex flex-col items-start gap-2'>
-                <div className='flex flex-row items-end gap-8 px-4 mb-2'>
-                    <div className='flex flex-row items-end gap-4'>
+            <div className='w-full flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 px-2'>
+                <Input
+                    size='md'
+                    variant='filled'
+                    className='w-full sm:w-2/3'
+                    placeholder='Искать по ФИО...'
+                    value={searchName}
+                    onChange={handleInputChange}
+                />
+                <Button
+                    variant='outline'
+                    className='w-full sm:w-1/3 px-4'
+                    size='md'
+                    onClick={openFilters}
+                    rightSection={<FunnelSimpleIcon size={16} />}
+                >
+                    Фильтры
+                </Button>
+            </div>
+
+            <SimpleGrid
+                className='w-full my-4 px-2'
+                cols={{ base: 1, lg: 2 }}
+                spacing='md'
+                verticalSpacing='lg'
+            >
+                {isLoading && [...Array(10)].map((_, index) => <OrderCardSkeleton key={index} />)}
+                {hasOrders
+                    ? certificates.map((item) => (
+                          <OrderCard key={item.id} onClick={handleSelectOrder} {...item} />
+                      ))
+                    : !isLoading && <></>}
+            </SimpleGrid>
+            {!hasOrders && !isLoading && <EmptyResult onClick={resetFilters} />}
+
+            {hasOrders && (
+                <Pagination
+                    className='px-2'
+                    total={handlePaginationTotal()}
+                    size='lg'
+                    radius='sm'
+                    value={pagination.offset + 1}
+                    onChange={handlePageChange}
+                />
+            )}
+
+            <Modal
+                opened={filtersOpened}
+                onClose={closeFilters}
+                title='Дополнительные фильтры'
+                size='lg'
+                padding='md'
+            >
+                <Stack gap='md'>
+                    <div className='flex flex-col sm:flex-row items-start sm:items-center gap-4 px-2'>
+                        <Input.Wrapper label='Факультет' className='w-full sm:w-2/3'>
+                            <Input
+                                placeholder='Введите название факультета'
+                                value={facultyValue}
+                                className='w-full'
+                                onChange={(e) => setFacultyValue(e.currentTarget.value)}
+                            />
+                        </Input.Wrapper>
+                        <Input.Wrapper label='Группа' className='w-full sm:w-1/3'>
+                            <Input
+                                placeholder='Введите номер группы'
+                                value={groupValue}
+                                className='w-full'
+                                onChange={(e) => setGroupValue(e.currentTarget.value)}
+                            />
+                        </Input.Wrapper>
+                    </div>
+                    <div className='flex flex-col sm:flex-row items-start sm:items-center gap-4 px-2'>
                         <Select
                             label='Статус заказа'
-                            size='md'
                             placeholder='Выберите статус'
+                            className='w-full'
                             data={statusOptions}
                             value={statusValue}
                             onChange={setStatusValue}
-                            className='w-full max-w-40'
                             comboboxProps={{
                                 transitionProps: { transition: 'pop', duration: 100 },
                                 shadow: 'sm',
@@ -149,12 +246,11 @@ export const CertificatesPage = () => {
                         />
                         <Select
                             label='Тип справки'
-                            size='md'
                             placeholder='Выберите тип'
+                            className='w-full'
                             data={typeOptions}
                             value={typeValue}
                             onChange={setTypeValue}
-                            className='w-full max-w-50'
                             comboboxProps={{
                                 transitionProps: { transition: 'pop', duration: 100 },
                                 shadow: 'sm',
@@ -162,52 +258,27 @@ export const CertificatesPage = () => {
                             clearable
                         />
                     </div>
-                    <div className='flex flex-row items-center gap-2'>
+                    <div className='flex flex-col sm:flex-row items-stretch gap-2 px-2'>
                         <Button
-                            rightSection={<FunnelSimpleIcon size={16} />}
-                            variant='filled'
-                            size='md'
+                            className='w-full sm:flex-1'
+                            variant='outline'
+                            size='sm'
                             radius='md'
+                            onClick={resetFilters}
+                        >
+                            Сбросить
+                        </Button>
+                        <Button
+                            className='w-full sm:flex-1'
                             onClick={handleApplyFilters}
+                            size='sm'
+                            radius='md'
                         >
                             Применить
                         </Button>
-                        {(statusValue || typeValue) && (
-                            <Button variant='filled' size='md' radius='md' onClick={resetFilters}>
-                                <ArrowClockwiseIcon size={24} />
-                            </Button>
-                        )}
                     </div>
-                </div>
-                <Input
-                    size='md'
-                    className='w-full px-4'
-                    placeholder='Искать по ФИО...'
-                    value={searchName}
-                    onChange={handleInputChange}
-                />
-            </div>
-
-            <SimpleGrid className='w-full my-3 px-4' cols={2} spacing='md' verticalSpacing='lg'>
-                {isLoading && [...Array(10)].map((_, index) => <OrderCardSkeleton key={index} />)}
-                {hasOrders
-                    ? certificates.map((item) => {
-                          return <OrderCard key={item.id} onClick={handleSelectOrder} {...item} />;
-                      })
-                    : !isLoading && <></>}
-            </SimpleGrid>
-            {!hasOrders && !isLoading && <EmptyResult onClick={resetFilters} />}
-
-            {hasOrders && (
-                <Pagination
-                    className='px-4'
-                    total={handlePaginationTotal()}
-                    size='lg'
-                    radius='sm'
-                    value={pagination.offset}
-                    onChange={handlePageChange}
-                />
-            )}
+                </Stack>
+            </Modal>
         </div>
     );
 };

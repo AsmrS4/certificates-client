@@ -12,6 +12,9 @@ export const useCertificates = () => {
         offset: 0,
         status: '',
         type: '',
+        nationality_type: undefined,
+        faculty_name: '',
+        group_code: '',
         full_name: '',
         user_id: null,
     });
@@ -24,28 +27,34 @@ export const useCertificates = () => {
     const handleSelectOrder = (id: number): void => {
         navigate(`/certificates/${id}`);
     };
+
     const updateFilters = (newParams: Partial<Params>) => {
         setParams((prev) => {
             const updated = { ...prev, ...newParams, offset: 0 };
-
+            // Если параметры не изменились, не обновляем (чтобы избежать лишних запросов)
             if (
                 prev.offset === 0 &&
-                (Object.keys(newParams) as Array<keyof Params>).every(
-                    (key) => prev[key] === newParams[key],
+                Object.keys(newParams).every(
+                    (key) => prev[key as keyof Params] === newParams[key as keyof Params],
                 )
             ) {
                 return prev;
             }
-
             return updated;
         });
     };
+
     const handleStatus = (status: string) => updateFilters({ status });
     const handleType = (type: string) => updateFilters({ type });
     const handleOffset = (offset: number) => setParams((prev) => ({ ...prev, offset }));
     const handleSearchName = (value: string) => {
         setParams((prev) => ({ ...prev, full_name: value, offset: 0 }));
     };
+    const handleNationality = (value: string | null) => {
+        updateFilters({ nationality_type: value as 'domestic' | 'foreign' | undefined });
+    };
+    const handleFacultyName = (value: string) => updateFilters({ faculty_name: value });
+    const handleGroupCode = (value: string) => updateFilters({ group_code: value });
 
     const initialize = (initialParams: Partial<Params>) => {
         setParams((prev) => ({ ...prev, ...initialParams }));
@@ -70,17 +79,15 @@ export const useCertificates = () => {
     useEffect(() => {
         let isMounted = true;
         const init = async (): Promise<void> => {
-            if (isMounted) {
+            if (isMounted && isInitialized) {
                 await fetchCertificates();
             }
         };
-        if (isInitialized) {
-            init();
-        }
+        init();
         return () => {
             isMounted = false;
         };
-    }, [params, isInitialized, params.full_name]);
+    }, [params, isInitialized]);
 
     return {
         certificates,
@@ -92,6 +99,9 @@ export const useCertificates = () => {
         handleStatus,
         handleOffset,
         handleSearchName,
+        handleNationality,
+        handleFacultyName,
+        handleGroupCode,
         handleSelectOrder,
         setSearchName,
         initialize,
