@@ -1,10 +1,9 @@
 import type { CertificateOrder, Certificates, Pagination, Params } from '@/models/certificates';
 import { useEffect, useState } from 'react';
 import { useErrorHandler } from './useErrorHandler';
-import { fetchOrderedCertificates } from '@/api/certificates';
 import { useNavigate } from 'react-router-dom';
 
-export const useCertificates = () => {
+export const useCertificates = (fetchFn: (params: Params) => Promise<Certificates>) => {
     const [certificates, setCertificates] = useState<CertificateOrder[]>([]);
     const [pagination, setPagination] = useState<Pagination>({ limit: 10, offset: 0, total: 0 });
     const [params, setParams] = useState<Params>({
@@ -31,7 +30,6 @@ export const useCertificates = () => {
     const updateFilters = (newParams: Partial<Params>) => {
         setParams((prev) => {
             const updated = { ...prev, ...newParams, offset: 0 };
-            // Если параметры не изменились, не обновляем (чтобы избежать лишних запросов)
             if (
                 prev.offset === 0 &&
                 Object.keys(newParams).every(
@@ -66,7 +64,7 @@ export const useCertificates = () => {
             setLoading(true);
             clearError();
             setCertificates([]);
-            const res: Certificates = await fetchOrderedCertificates(params);
+            const res: Certificates = await fetchFn(params);
             setCertificates(res.data);
             setPagination((prev) => ({ ...prev, ...res.pagination }));
         } catch (error) {
@@ -87,7 +85,7 @@ export const useCertificates = () => {
         return () => {
             isMounted = false;
         };
-    }, [params, isInitialized]);
+    }, [params, isInitialized, fetchFn]);
 
     return {
         certificates,

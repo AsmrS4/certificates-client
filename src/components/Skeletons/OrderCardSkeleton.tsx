@@ -11,7 +11,7 @@ export const OrderCardSkeleton = () => {
                 <Divider />
                 <Group mt='sm'>
                     <div className='flex flex-row gap-10 w-full'>
-                        <Skeleton height={48} radius='md' />
+                        <Skeleton height={144} radius='md' />
                     </div>
                 </Group>
             </div>

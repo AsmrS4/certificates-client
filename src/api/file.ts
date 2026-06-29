@@ -7,8 +7,20 @@ export const uploadFile = async ({
     orderId,
     pluginId,
     file,
-    fileType = 'document',
 }: UploadFileOptions): Promise<UploadedFile> => {
+    const getFileCategory = (file: File): string => {
+        if (file.type.startsWith('image/')) return 'photo';
+        if (
+            file.type === 'application/pdf' ||
+            file.type === 'application/msword' ||
+            file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ) {
+            return 'document';
+        }
+
+        return 'document';
+    };
+
     const initRes = await axios.post(
         `/api/files/init`,
         {
@@ -16,7 +28,7 @@ export const uploadFile = async ({
             name: file.name,
             mime_type: file.type || 'application/octet-stream',
             size: file.size,
-            file_type: fileType,
+            file_type: getFileCategory(file),
         },
         { withCredentials: true },
     );
@@ -42,6 +54,8 @@ export const uploadFile = async ({
         {
             file_id: completeRes.data.id,
             file_name: completeRes.data.name,
+            file_type: completeRes.data.fileType,
+            mime_type: completeRes.data.mimeType,
         },
         {
             withCredentials: true,

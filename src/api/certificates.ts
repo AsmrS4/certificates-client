@@ -16,6 +16,30 @@ export const fetchOrderedCertificates = async (params: Params): Promise<Certific
     }
 };
 
+export const fetchOrderedCertificatesForForeign = async (params: Params): Promise<Certificates> => {
+    try {
+        const res: AxiosResponse<Certificates> = await axios.get(`${BASE_URI}/foreign`, {
+            withCredentials: true,
+            params: { ...params },
+        });
+        return res.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const fetchOrderedCertificatesHistory = async (params: Params): Promise<Certificates> => {
+    try {
+        const res: AxiosResponse<Certificates> = await axios.get(`${BASE_URI}/history`, {
+            withCredentials: true,
+            params: { ...params },
+        });
+        return res.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
 export const fetchOrderedCertificateDetails = async (
     orderId: number,
 ): Promise<CertificateDetails> => {

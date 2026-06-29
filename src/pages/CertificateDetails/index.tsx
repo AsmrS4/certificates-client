@@ -17,7 +17,6 @@ import {
     Text,
     Badge,
     Button,
-    CheckIcon,
     Divider,
     FileInput,
     Group,
@@ -30,11 +29,27 @@ import {
     Anchor,
     Title,
     SimpleGrid,
+    Grid,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import { CloudArrowUpIcon, XIcon, DownloadIcon, FileIcon } from '@phosphor-icons/react';
+import { CloudArrowUpIcon, XIcon, FileIcon } from '@phosphor-icons/react';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+
+const cleanFormData = (data: Record<string, unknown>): Record<string, unknown> => {
+    if (!data) return {};
+
+    const result: Record<string, unknown> = {};
+    const keys = Object.keys(data);
+
+    for (const key of keys) {
+        if (!key.includes(':')) {
+            result[key] = data[key];
+        }
+    }
+
+    return result;
+};
 
 export const CertificateDetails = () => {
     const { id } = useParams();
@@ -49,7 +64,6 @@ export const CertificateDetails = () => {
         isLoading: isProcessStatus,
         handleProcessOrder,
         handleRejectOrder,
-        handleFinishOrder,
         handleUploadCertificate,
     } = useOrderStatus(id, order, handleChangeOrderStatus);
     const handleFileChange = (payload: File | null) => {
@@ -57,23 +71,19 @@ export const CertificateDetails = () => {
     };
 
     const renderFormData = () => {
-        if (!order?.form_data || Object.keys(order.form_data).length === 0) {
-            return null;
-        }
-        const entries = Object.entries(order.form_data).filter(([key]) => key !== 'attachments');
+        if (!order?.form_data) return null;
+        const cleaned = cleanFormData(order.form_data);
+        const entries = Object.entries(cleaned).filter(([key]) => key !== 'attachments');
         if (entries.length === 0) return null;
 
         return (
             <Card withBorder p='md' mt='md'>
                 <Title order={5} mb='sm'>
-                    Дополнительная информация
+                    {'Дополнительная информация(комментарий):'}
                 </Title>
                 <List>
                     {entries.map(([key, value]) => (
                         <List.Item key={key}>
-                            <Text size='sm' component='span' fw={500}>
-                                {key}:
-                            </Text>{' '}
                             <Text size='sm' component='span'>
                                 {String(value)}
                             </Text>
@@ -144,9 +154,21 @@ export const CertificateDetails = () => {
                     <FileIcon size={16} />
                     <Text size='sm'>{file.file_name}</Text>
                     {file.storage_url && (
-                        <Anchor href={file.storage_url} target='_blank' size='sm'>
-                            <DownloadIcon size={14} /> Скачать
-                        </Anchor>
+                        <Badge
+                            variant='light'
+                            color='blue'
+                            className='inline-flex items-center gap-1 px-2 py-1'
+                        >
+                            <Anchor
+                                href={file.storage_url}
+                                target='_blank'
+                                size='sm'
+                                className='flex items-center gap-1 text-xs'
+                                style={{ textDecoration: 'none', color: 'inherit' }}
+                            >
+                                <span className='text-xs !important'>Скачать</span>
+                            </Anchor>
+                        </Badge>
                     )}
                     <Text size='xs' c='dimmed'>
                         Загружено: {formatDate(file.uploaded_at)}
@@ -216,48 +238,37 @@ export const CertificateDetails = () => {
                                         </Button>
                                     </>
                                 )}
-                                {order?.application_status === 'Prepare' &&
-                                    (order.obtain_method == 'Electronic' ? (
-                                        <div className='flex flex-row items-end gap-2'>
-                                            <FileInput
-                                                variant='filled'
-                                                size='sm'
-                                                clearable
-                                                label='Загрузить справку'
-                                                placeholder='Выберите файл'
-                                                value={file}
-                                                onChange={handleFileChange}
-                                                className='w-full sm:w-auto'
-                                            />
-                                            <Button
-                                                color='blue'
-                                                size='sm'
-                                                rightSection={<CloudArrowUpIcon size={16} />}
-                                                onClick={() => {
-                                                    file && handleUploadCertificate(file);
-                                                }}
-                                                disabled={isProcessStatus || file === null}
-                                            >
-                                                Отправить
-                                            </Button>
-                                        </div>
-                                    ) : (
-                                        <Button
-                                            color='green'
+                                {order?.application_status === 'Prepare' && (
+                                    <div className='flex flex-row items-end gap-2'>
+                                        <FileInput
+                                            variant='filled'
                                             size='sm'
-                                            rightSection={<CheckIcon size={16} />}
-                                            onClick={handleFinishOrder}
-                                            disabled={isProcessStatus}
+                                            clearable
+                                            label='Загрузить справку'
+                                            placeholder='Выберите файл'
+                                            value={file}
+                                            onChange={handleFileChange}
+                                            className='w-full sm:w-auto'
+                                        />
+                                        <Button
+                                            color='blue'
+                                            size='sm'
+                                            rightSection={<CloudArrowUpIcon size={16} />}
+                                            onClick={() => {
+                                                file && handleUploadCertificate(file);
+                                            }}
+                                            disabled={isProcessStatus || file === null}
                                         >
-                                            Подтвердить готовность
+                                            Отправить
                                         </Button>
-                                    ))}
+                                    </div>
+                                )}
                             </div>
                         </header>
 
                         <Divider className='my-4' />
-                        <SimpleGrid cols={{ base: 2, sm: 2, md: 2 }} spacing='lg' mt='sm' px='md'>
-                            <div>
+                        <Grid mt='sm' px='md'>
+                            <Grid.Col span={{ base: 12, sm: 8 }}>
                                 <Text size='sm' c='dimmed'>
                                     ФИО получателя
                                 </Text>
@@ -268,8 +279,8 @@ export const CertificateDetails = () => {
                                         {order?.full_name || 'Неизвестный получатель'}
                                     </Text>
                                 )}
-                            </div>
-                            <div>
+                            </Grid.Col>
+                            <Grid.Col span={{ base: 12, sm: 4 }}>
                                 <Text size='sm' c='dimmed'>
                                     Статус студента
                                 </Text>
@@ -281,8 +292,8 @@ export const CertificateDetails = () => {
                                             'Неизвестен'}
                                     </Text>
                                 )}
-                            </div>
-                        </SimpleGrid>
+                            </Grid.Col>
+                        </Grid>
                         <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing='md' mt='sm' px='sm'>
                             <div>
                                 <Text size='sm' c='dimmed'>

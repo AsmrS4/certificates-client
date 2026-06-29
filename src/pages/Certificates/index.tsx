@@ -9,6 +9,7 @@ import { EmptyResult } from '@/components/Result/EmptyResult';
 import { useNotification } from '@/hooks/useNotification';
 import { useSearchParams } from 'react-router-dom';
 import { useDebounce } from '@/hooks/useDebounce';
+import { fetchOrderedCertificates } from '@/api/certificates';
 
 const statusOptions = [
     { value: 'Pending', label: 'Новые' },
@@ -41,7 +42,7 @@ export const CertificatesPage = () => {
         handleGroupCode,
         handleOffset,
         initialize,
-    } = useCertificates();
+    } = useCertificates(fetchOrderedCertificates);
 
     const hasOrders = certificates && certificates.length > 0;
     const [statusValue, setStatusValue] = useState<string | null>(null);
@@ -157,7 +158,7 @@ export const CertificatesPage = () => {
     }, [errorMessage]);
 
     return (
-        <div className='flex flex-col w-full py-8 px-2 overflow-y-scroll h-full'>
+        <div className='flex flex-col w-full py-8 px-2 sm:px-8 overflow-y-scroll h-full'>
             <div className='w-full flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 px-2'>
                 <Input
                     size='md'
@@ -258,7 +259,7 @@ export const CertificatesPage = () => {
                             clearable
                         />
                     </div>
-                    <div className='flex flex-col sm:flex-row items-stretch gap-2 px-2'>
+                    <div className='flex flex-col sm:flex-row items-stretch gap-2 px-2 mt-2'>
                         <Button
                             className='w-full sm:flex-1'
                             variant='outline'
