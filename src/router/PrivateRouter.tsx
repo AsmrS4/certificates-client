@@ -1,11 +1,27 @@
-import { ACCESS_TOKEN } from '@/constants';
 import { Navigate, Outlet } from 'react-router-dom';
+
 import { routes } from './routes';
+import { useAuth } from '@/hooks/useAuth';
+import { useEffect } from 'react';
+import { logoutUser } from '@/api/auth';
 
 const PrivateRouter = () => {
-    const isAuthenticated: string | boolean = localStorage.getItem(ACCESS_TOKEN) || true;
+    const { context, handleValidateSession } = useAuth();
+    const handleLogout = async () => {
+        await logoutUser();
+    };
+    useEffect(() => {
+        handleValidateSession();
+    }, []);
 
-    if (!isAuthenticated) return <Navigate to={routes.auth.login} replace />;
+    if (context.loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (!context.isAuthenticated) {
+        handleLogout();
+        return <Navigate to={routes.auth.login} replace />;
+    }
 
     return <Outlet />;
 };

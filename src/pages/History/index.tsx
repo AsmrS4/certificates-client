@@ -9,22 +9,29 @@ import { EmptyResult } from '@/components/Result/EmptyResult';
 import { useNotification } from '@/hooks/useNotification';
 import { useSearchParams } from 'react-router-dom';
 import { useDebounce } from '@/hooks/useDebounce';
-import { fetchOrderedCertificates } from '@/api/certificates';
+import { fetchOrderedCertificatesHistory } from '@/api/certificates';
 
 const statusOptions = [
-    { value: 'Pending', label: 'Новые' },
-    { value: 'Prepare', label: 'Готовится' },
+    { value: 'Done', label: 'Готова' },
+    { value: 'Rejected', label: 'Отклонена' },
 ];
 
 const typeOptions = [
     { value: 'study_period', label: 'Справка об обучении' },
+    { value: 'study_period_en', label: 'Справка об обучении (англ.)' },
     { value: 'call', label: 'Справка-вызов' },
     { value: 'name_change', label: 'Справка о смене ФИО' },
+    { value: 'mvd', label: 'Справка в МВД (ФМС)' },
     { value: 'recommendation_letter', label: 'Реком. письмо' },
     { value: 'common', label: 'Иная' },
 ];
 
-export const CertificatesPage = () => {
+const nationalityOptions = [
+    { value: 'domestic', label: 'Гражданин РФ' },
+    { value: 'foreign', label: 'Иностранный студент' },
+];
+
+export const HistoryPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const {
         isLoading,
@@ -42,12 +49,12 @@ export const CertificatesPage = () => {
         handleGroupCode,
         handleOffset,
         initialize,
-    } = useCertificates(fetchOrderedCertificates);
+    } = useCertificates(fetchOrderedCertificatesHistory);
 
     const hasOrders = certificates && certificates.length > 0;
     const [statusValue, setStatusValue] = useState<string | null>(null);
     const [typeValue, setTypeValue] = useState<string | null>(null);
-    const [nationalityValue, setNationalityValue] = useState<string | null>('domestic');
+    const [nationalityValue, setNationalityValue] = useState<string | null>('');
     const [facultyValue, setFacultyValue] = useState<string>('');
     const [groupValue, setGroupValue] = useState<string>('');
 
@@ -61,13 +68,14 @@ export const CertificatesPage = () => {
         const pageParam = searchParams.get('page');
         const searchNameParam = searchParams.get('search') || '';
         const facultyParam = searchParams.get('faculty') || '';
+        const nationalityParam = searchParams.get('nationality') || '';
         const groupParam = searchParams.get('group') || '';
         const page = pageParam ? parseInt(pageParam, 10) : 0;
 
         setStatusValue(statusParam || null);
         setTypeValue(typeParam || null);
         setSearchName(searchNameParam || '');
-
+        setNationalityValue(nationalityParam || '');
         setFacultyValue(facultyParam || '');
         setGroupValue(groupParam || '');
 
@@ -75,7 +83,7 @@ export const CertificatesPage = () => {
             status: statusParam,
             type: typeParam,
             offset: page,
-            nationality_type: 'domestic',
+            nationality_type: undefined,
             faculty_name: facultyParam,
             group_code: groupParam,
         });
@@ -117,6 +125,7 @@ export const CertificatesPage = () => {
         handleType(typeValue ?? '');
         handleSearchName(searchName ?? '');
         handleFacultyName(facultyValue);
+        handleNationality(nationalityValue ?? '');
         handleGroupCode(groupValue);
         closeFilters();
     };
@@ -134,7 +143,7 @@ export const CertificatesPage = () => {
         setStatusValue(null);
         setTypeValue(null);
         setSearchName('');
-        setNationalityValue('domestic');
+        setNationalityValue('');
         setFacultyValue('');
         setGroupValue('');
         handleStatus('');
@@ -232,6 +241,19 @@ export const CertificatesPage = () => {
                         </Input.Wrapper>
                     </div>
                     <div className='flex flex-col sm:flex-row items-start sm:items-center gap-4 px-2'>
+                        <Select
+                            label='Гражданство'
+                            placeholder='Укажите гражданство'
+                            className='w-full'
+                            data={nationalityOptions}
+                            value={nationalityValue}
+                            onChange={setNationalityValue}
+                            comboboxProps={{
+                                transitionProps: { transition: 'pop', duration: 100 },
+                                shadow: 'sm',
+                            }}
+                            clearable
+                        />
                         <Select
                             label='Статус заказа'
                             placeholder='Выберите статус'

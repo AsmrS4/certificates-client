@@ -1,15 +1,17 @@
 import { useEffect, useState, type ChangeEvent } from 'react';
 import { OrderCard } from '@/components/OrderCard';
 import { useCertificates } from '@/hooks/useCertificates';
-import { Button, Input, Pagination, Select, SimpleGrid, Modal, Stack } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { Button, Input, Pagination, Select, SimpleGrid } from '@mantine/core';
 import { FunnelSimpleIcon } from '@phosphor-icons/react';
 import { OrderCardSkeleton } from '@/components/Skeletons/OrderCardSkeleton';
 import { EmptyResult } from '@/components/Result/EmptyResult';
 import { useNotification } from '@/hooks/useNotification';
 import { useSearchParams } from 'react-router-dom';
 import { useDebounce } from '@/hooks/useDebounce';
-import { fetchOrderedCertificates } from '@/api/certificates';
+
+import { Modal, Stack } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { fetchOrderedCertificatesForForeign } from '@/api/certificates';
 
 const statusOptions = [
     { value: 'Pending', label: 'Новые' },
@@ -18,13 +20,15 @@ const statusOptions = [
 
 const typeOptions = [
     { value: 'study_period', label: 'Справка об обучении' },
+    { value: 'study_period_en', label: 'Справка об обучении (англ.)' },
     { value: 'call', label: 'Справка-вызов' },
     { value: 'name_change', label: 'Справка о смене ФИО' },
+    { value: 'mvd', label: 'Справка в МВД (ФМС)' },
     { value: 'recommendation_letter', label: 'Реком. письмо' },
     { value: 'common', label: 'Иная' },
 ];
 
-export const CertificatesPage = () => {
+export const CertificatesForeignPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const {
         isLoading,
@@ -42,12 +46,12 @@ export const CertificatesPage = () => {
         handleGroupCode,
         handleOffset,
         initialize,
-    } = useCertificates(fetchOrderedCertificates);
+    } = useCertificates(fetchOrderedCertificatesForForeign);
 
     const hasOrders = certificates && certificates.length > 0;
     const [statusValue, setStatusValue] = useState<string | null>(null);
     const [typeValue, setTypeValue] = useState<string | null>(null);
-    const [nationalityValue, setNationalityValue] = useState<string | null>('domestic');
+    const [nationalityValue, setNationalityValue] = useState<string | null>('foreign');
     const [facultyValue, setFacultyValue] = useState<string>('');
     const [groupValue, setGroupValue] = useState<string>('');
 
@@ -75,7 +79,7 @@ export const CertificatesPage = () => {
             status: statusParam,
             type: typeParam,
             offset: page,
-            nationality_type: 'domestic',
+            nationality_type: 'foreign',
             faculty_name: facultyParam,
             group_code: groupParam,
         });
@@ -134,7 +138,7 @@ export const CertificatesPage = () => {
         setStatusValue(null);
         setTypeValue(null);
         setSearchName('');
-        setNationalityValue('domestic');
+        setNationalityValue('foreign');
         setFacultyValue('');
         setGroupValue('');
         handleStatus('');
